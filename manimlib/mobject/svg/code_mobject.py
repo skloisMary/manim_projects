@@ -162,7 +162,7 @@ class Code(VGroup):
         return code
 
     def gen_html_string(self):
-        file = open(self.file_path, "r")
+        file = open(self.file_path, "r", encoding='utf-8')
         code_str = file.read()
         file.close()
         self.html_string = hilite_me(code_str, self.language, {}, self.style, self.insert_line_no,
