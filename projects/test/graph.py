@@ -302,28 +302,158 @@ class DFS(Scene):
 
 class BFS(Scene):
     def construct(self):
+        # logo
+        logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold").scale(0.5)
+        height = logo_text.get_height() + 2 * 0.1
+        width = logo_text.get_width() + 2 * 0.15
+        logo_ellipse = Ellipse(
+            width=width,           
+            height=height, stroke_width=0.5
+        )
+        logo_ellipse.set_fill(color=PURPLE,opacity=0.3)
+        logo_ellipse.set_stroke(color=GRAY)
+        logo_text.move_to(logo_ellipse.get_center())
+        logo = VGroup(logo_ellipse, logo_text)
+        logo.shift(np.array((6.5, 3.5, 0.)))
+        #
+        dfs_title =TextMobject("广度优先搜索算法", color=RED, fontsize=42, font="\heiti")
+        self.play(Write(dfs_title), Write(logo))
+        self.wait(1)
+        title = TextMobject("广度优先搜索", fontsize=32)
+        title.to_edge(UP)
+        self.play(ReplacementTransform(dfs_title,title))
+        # 
+        self.description()
+        self.process()
+        self.codes_display()
         self.action()
 
     def description(self):
-        color_dict_1 = {"广度优先搜索(Breadth First Search, BFS)":RED, "对于每一个可能的分支路径深入到不能深入为止":PURPLE}
-        text_1 = TextMobject("深度优先搜索算法(Depth First Search,DFS)属于图算法的一种。", 
-        "其思想简要可简要描述为对于每一个可能的分支路径深入到不能深入为止，而且每个节点只能访问一次。",alignment="\\raggedright", 
-        tex_to_color_map=color_dict_1).scale(0.5)
-        text_1.shift(2 * UP)
-        self.play(Write(text_1), run_time=3)
-        text_2 = BulletedList("步骤一: 从图中指定顶点v出发,访问此顶点,然后依次从v的未被访问的邻接点出发深度优先遍历图,直至图中所有与v有路径连通的顶点都被访问到;",
-        "步骤二：若此时图中尚有顶点未被访问,则选图中一个未曾被访问的顶点作起始点，重复步骤一，直至图中所有顶点都被访问到为止。", dot_color=BLUE).scale(0.45)
+        color_dict_1 = {"广度优先搜索(Breadth First Search, BFS)": PURPLE, 
+        "树的层次遍历": MAROON, "先被访问的顶点的邻接点": BLUE,
+        "后被访问的顶点的邻接点": GREEN,"依次":ORANGE,"先于": RED}
+        text_1 = TextMobject("广度优先搜索(Breadth First Search, BFS)遍历类似于树的层次遍历。", 
+        "假设从图中某顶点v出发,在访问了v之后依次访问v的各个未曾访问的邻接点,然后从这些临界点出发依次访问它们的邻接点,",
+        "并使先被访问的顶点的邻接点先于后被访问的顶点的邻接点被访问,直至图中所有已被访问的顶点的邻接点都被访问到。",
+        "若此时图中尚有顶点未被访问,则另选图中一个未曾被访问的顶点作为起始点,重复上述过程,直至图中所有的顶点被访问为止.", alignment="\\raggedright", 
+        tex_to_color_map=color_dict_1, font="heiti").scale(0.5)
+        text_1.shift(1.5 * UP)
+        self.play(Write(text_1), run_time=5)
+        text_2 = BulletedList("与深度优先搜索不撞南墙不回头的过程不同,广度优点搜索由近及远,依次访问与起始顶点有路径相通且路径长度为1,2,...的顶点。",
+        "与深度优先搜索类似,在遍历的过程中也需要一个访问标志数组。",
+        "为了顺次访问路径为2,3,...的顶点，广度优先搜索利用数据结构-队列储存已被访问的顶点", dot_color=BLUE, font="heiti").scale(0.45)
         text_2.next_to(text_1, DOWN, aligned_edge=LEFT)
-        self.play(Write(text_2), run_time=5)
+        self.play(Write(text_2), run_time=3)
+        self.wait(3)
         self.play(Uncreate(VGroup(text_1, text_2)))
 
+    def process(self):
+        new_positions = [[-4,2,0],[-5,1,0],[-6,0,0],[-4.5,-0.5,0],[-5.5,-1.5,0],[-4.5,-2.5,0],[-3.5,-1.5,0],[-3.5,1,0],[-3.5,-0.5,0], [-2.5,0,0]]
+        radius = 0.3
+        graph = Graph(data, graph_datas, new_positions, radius)
+        self.play(ShowCreation(VGroup(graph.elements, graph.line_groups)))
+        length = len(data)
+        graphs_map = np.zeros((length, length))
+        flags = np.zeros(length)
+        lines_center = []
+        for i in range(len(graph_datas)):
+            points_1 = graph_datas[i][0] - 1
+            points_2 = graph_datas[i][1] - 1
+            graphs_map[points_1][points_2] = 1
+            graphs_map[points_2][points_1] = 1
+            center_positions = (graph.elements[points_1].get_center() + graph.elements[points_2].get_center()) / 2
+            lines_center.append(center_positions)
+        #
+        path_distance = [1, 1, 2, 2, 3, 3, 3, 4, 4, 2, 2, 3]
+        lines_center_group = VGroup()
+        for i in range(len(path_distance)):
+            path_education_text = TextMobject(str(path_distance[i])).scale(0.5)
+            path_education_text.move_to(lines_center[i])
+            lines_center_group.add(path_education_text)
+        self.play(ShowCreation(lines_center_group), run_time=2)
+        begin = 0
+        flags[begin] = 1
+        tmp = begin
+        # 
+        color_dict = {
+            "点1": MAROON_A,
+            "点2": TEAL,
+            "点3": GREEN,
+            "点4": YELLOW,
+            "点5": GOLD,
+            "点6": RED,
+            "点7": MAROON,
+            "点8": PURPLE,
+            "点9": GREY,
+            "点10":ORANGE,
+        }
+        bfs_description = TextMobject("首先访问顶点1, 然后依次访问顶点1的未被访问的邻接点2和点8,",
+        "按照先被访问的顶点的邻接点先于后被访问的顶点的邻接点被访问的原则,",
+        "依次访问顶点2的未被访问的邻接顶点3和顶点4,顶点8的未被访问的邻接点9和点10, 按照这样的次序,",
+        "依次访问点3、点4、点8和点9未被访问的邻接点,只有点4的邻接点点5、点6和点7未被访问,最后访问访问点5、点6和点7。",
+        "由于所有的顶点都被访问,由此完成了图的遍历过程。",alignment="\\raggedright", 
+        tex_to_color_map=color_dict, font="heiti").scale(0.5)
+        bfs_description.move_to([2.5, 0.5, 0])
+        self.play(Write(bfs_description), run_time=4)
+        #初始化队列
+        Q = []
+        Q.append(begin)
+        while len(Q):
+            top = Q.pop(0) # 出队列
+            #
+            if graphs_map[tmp][top] == 0.0:
+                for i in range(len(graph_datas)):
+                    if graph_datas[i][1] == (top+1):
+                        tmp = graph_datas[i][0] - 1
+                        break
+            if (top - begin):
+                dot_tmp= Dot(color=RED)
+                lines_path = Line(start=graph.elements[tmp].get_center(), end=graph.elements[top].get_center())
+                self.play(MoveAlongPath(dot_tmp, lines_path),run_time=2,rate_func=linear)
+                self.play(Uncreate(dot_tmp))
+            self.play(ShowCreation(graph.elements[top][0].set_fill(MAROON, opacity=0.6)))
+            for i in range(length):
+                if flags[i]==0 and graphs_map[top][i] == 1:
+                    Q.append(i)
+                    flags[i] = 1
+        
+        results_text = TextMobject("图的BFS遍历得到的顶点访问序列为: 1,2,8,3,4,9,10,5,6,7", alignment="\\raggedright", font="heiti").scale(0.5)
+        results_text.next_to(bfs_description, DOWN, aligned_edge=LEFT)
+        self.play(Write(results_text), run_time=1)
+        self.wait(3)
+        self.play(Uncreate(VGroup(bfs_description, results_text)))
+        self.play(Uncreate(VGroup(graph.elements, graph.line_groups,lines_center_group)))
+
+    def draw_code_all_lines_at_a_time(self, Code):
+        self.play(Write(Code.background_mobject), run_time=0.5)
+        self.play(Write(Code.line_numbers), run_time=0.5)
+        for i in range(Code.code.__len__()):
+            self.play(Write(Code.code[i]), run_time=0.5)
+    def codes_display(self):
+        bfs_code = Code(file_name="F:\manim\\projects\\test\\codes\\BFS_queue.cpp", style=code_styles_list[11]).scale(0.8)
+        bfs_code.move_to([0, -0.5, 0])
+        self.draw_code_all_lines_at_a_time(bfs_code)
+        self.wait(5)
+        self.play(Uncreate(bfs_code))
+
     def action(self):
-        # BFS
-        self.camera.background_color = BLACK
         # 画图
         radius = 0.3
         graph = Graph(data, graph_datas, positions, radius)
         self.play(ShowCreation(VGroup(graph.elements, graph.line_groups)))
+        #
+        circle_v = Circle(radius=radius, stroke_color=BLUE)
+        circle_v.set_fill(MAROON, opacity=0.6)
+        text_v = TextMobject("已访问节点").scale(0.5)
+        text_v.next_to(circle_v, RIGHT)
+        v_group = VGroup(circle_v, text_v)
+        v_group.move_to([5, 3, 0.])
+        circle_v_n = Circle(radius=radius, stroke_color=BLUE)
+        text_v_n = TextMobject("未访问节点").scale(0.5)
+        text_v_n.next_to(circle_v_n, RIGHT)
+        v_n_group = VGroup(circle_v_n, text_v_n)
+        v_n_group.next_to(v_group, DOWN)
+        self.play(ShowCreation(VGroup(v_group, v_n_group)))
         # 定义graph map
         length = len(data)
         graphs_map = np.zeros((length, length))
@@ -336,7 +466,7 @@ class BFS(Scene):
         bottom_p , top_p = -3, -2
         line_1 = Line(start = [left_p, top_p, 0], end = [right_p, top_p, 0], color = YELLOW)
         line_2 = Line(start = [left_p, bottom_p, 0], end = [right_p, bottom_p, 0], color = YELLOW)
-        stack_txt = MyText("队列").next_to(line_1, UP)
+        stack_txt = MyText("队列").next_to(line_2, DOWN)
         self.play(ShowCreation(VGroup(line_1, line_2)), ShowCreation(stack_txt))
         #
         begin = 0
@@ -351,6 +481,10 @@ class BFS(Scene):
         top_queue_positions = [left_p - 2 * radius,(top_p + bottom_p)/2, 0]
         bottom_queue_positions = [right_p + 2 * radius,(top_p + bottom_p)/2, 0]
         final_positions = [left_p - 2, bottom_p * (-1), 0]
+        # 顶点访问
+        text_list = TextMobject("访问\\\\", "序列").scale(0.5)
+        text_list.move_to([left_p - 3, 0, 0])
+        self.play(ShowCreation(text_list))
         # 进队列
         in_tmp = tmp_graph_element[begin]
         in_arc = ArcBetweenPoints(start=np.array(positions[begin]), end=np.array(bottom_queue_positions), angle=-TAU / 4)
