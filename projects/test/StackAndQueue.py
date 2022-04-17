@@ -297,7 +297,7 @@ class Queue(Scene):
         deque_text.next_to(deque_description, DOWN)
         self.play(Write(deque_text))
         deque_fun_bull_list = BulletedList("size: 返回双向队列中的元素个数", 
-        "empty:判断双向队列是否为空","push\_front:在队尾插入一个元素","push\_back:在尾部加入一个元素",
+        "empty:判断双向队列是否为空","push\_front:在队头插入一个元素","push\_back:在尾部加入一个元素",
         "pop\_front: 删除头部的元素","pop\_back:删除尾部的元素",
         "insert:插入一个元素", "erase:删除一个元素",dot_color=BLUE).scale(0.5)
         deque_fun_bull_list.next_to(deque_text, DOWN)
@@ -311,12 +311,14 @@ class Queue(Scene):
         "只需要将存储空间的第一个位置空闲，将新元素加入到第一元素的位置即可。","循环队列的队列大小是固定的，可以防止伪溢出的发生。" ,
         tex_to_color_map=circular_color_dict, alignment="\\raggedright", font="heiti").scale(0.5).shift(2 * UP)
         self.play(ReplacementTransform(deque_description, circular_queue))
+        self.wait(2)
         self.circularQueue()
         # 优先队列
         priority_color_dict = {"优先队列":RED, "优先级": PURPLE, "最高级先出": ORANGE, "堆排序": GOLD}
         priority_queue = TextMobject("优先队列(priority queue)中,元素被赋予优先级, 优先级最高的先出队列。", 
         "优先队列具有最高级先出(first in, larger in)的行为特性。","通常采用堆排序实现。",
         tex_to_color_map=priority_color_dict, alignment="\\raggedright", font="heiti").scale(0.5).shift(2 * UP)
+        self.wait(2)
         self.play(ReplacementTransform(circular_queue, priority_queue))
         #
         priority_text = TextMobject("C++ STL中优先队列声明的基本格式是:priority\_queue<结构类型> 队列名", alignment="\\raggedright").scale(0.5)
@@ -326,10 +328,11 @@ class Queue(Scene):
         "从大到小排序:priority\_queue<int,vector<int>,greater<int> >q;",dot_color=BLUE).scale(0.5)
         priority_bull_list.next_to(priority_text, DOWN, aligned_edge=LEFT)
         self.play(Write(priority_bull_list), run_time=2)
+        self.wait(2)
         priotiry_fun_bull_list = BulletedList("size: 返回优先队列中的元素个数", 
         "empty:判断优先队列是否为空","push:向优先队列插入元素",
         "pop: 删除优先队列的第一个元素","top:返回优先队列的第一个元素",dot_color=BLUE).scale(0.5)
-        priotiry_fun_bull_list.next_to(priority_bull_list, DOWN, aligned_edge=LEFT)
+        priotiry_fun_bull_list.next_to(priority_bull_list, DOWN)
         self.play(Write(priotiry_fun_bull_list), run_time=2)
         self.wait(2)
         self.play(Uncreate(VGroup(priority_text, priority_bull_list, priotiry_fun_bull_list)))
@@ -346,6 +349,7 @@ class Queue(Scene):
         alignment="\\raggedright", font="heiti").scale(0.5)
         monotone_queue_text.shift(2 * UP)
         self.play(ReplacementTransform(monotone_queue, monotone_queue_text))
+        self.wait(2)
         self.mon_queue_action()         
   
 
@@ -415,16 +419,19 @@ class Queue(Scene):
         circual_text = TextMobject("循环队列").scale(0.5)
         circual_text.next_to(circual.Annular_Sectors, DOWN)
         self.play(Write(VGroup(front_arrow, rear_arrow, circual_text)))
+        self.wait(1)
         # 队列的一般情况
         for i in range(len(string_text)):
-            self.play(Write(circual.Characters[i]))
-            self.play(Rotating(rear_arrow, radians=TAU/6 , run_time=1, about_point=position))
+            self.play(Write(circual.Characters[i]), Rotating(rear_arrow, radians=TAU/6 , run_time=1, about_point=position))
+            self.wait(1)
         text = TextMobject(texts[0], texts[1], texts[2], alignment="\\raggedright", font="heiti").scale(0.5)
         text.move_to([2.5, 0, 0])
         self.play(Write(text))
+        self.wait(2)
         bul_list = BulletedList(texts[3], texts[4], texts[5]).scale(0.5)
         bul_list.move_to([2.5, -1, 0])
         self.play(ReplacementTransform(text, bul_list))
+        self.wait(2)
         self.play(Uncreate(VGroup(circual.Annular_Sectors, circual.Characters, front_arrow, rear_arrow, circual_text, text, bul_list)))
 
     def mon_queue_action(self):
@@ -457,7 +464,7 @@ class Queue(Scene):
         bottom_p , top_p = -2, -1
         line_1 = Line(start = [left_p, top_p, 0], end = [right_p, top_p, 0], color = YELLOW)
         line_2 = Line(start = [left_p, bottom_p, 0], end = [right_p, bottom_p, 0], color = YELLOW)
-        stack_txt = MyText("单调队列").next_to(line_2, DOWN)
+        stack_txt = MyText("这是基于双端队列实现的单调队列").next_to(line_2, DOWN)
         #
         top_queue_positions = [left_p - 0.5, (bottom_p + top_p) / 2.0, 0]
         bottom_queue_positions = [right_p + 0.5, (bottom_p + top_p) / 2.0, 0]
@@ -469,6 +476,7 @@ class Queue(Scene):
         self.play(ShowCreation(VGroup(line_1, line_2, stack_txt, res_text)))
         #
         actions_text = MyText("单调队列求滑窗大小过程展示")
+        self.wait(1)
         actions_text.move_to([right_p + 2, top_p , 0])
         self.play(Write(actions_text))
         res = []
@@ -479,16 +487,18 @@ class Queue(Scene):
             self.play(ReplacementTransform(actions_text, text))
             actions_text = text
             while len(Q) > 0 and nums[Q[len(Q)-1]] <= nums[i]:
-                text = MyText(str(nums[Q[len(Q)-1]]) + "<=" + str(nums[i]) + "弹出队列中元素")
+                text = MyText(str(nums[Q[len(Q)-1]]) + "<=" + str(nums[i]) + ",弹出" + str(nums[Q[len(Q)-1]]))
                 text.move_to([right_p + 2, top_p , 0])
                 self.play(ReplacementTransform(actions_text, text))
                 actions_text = text
-                front = Q.pop(0) 
+                front = Q[-1] #从队尾删除
+                Q = Q[:-1]
                 #出队列
                 out_tmp = elements_tmp[front]
-                out_lines = Line(start = out_tmp.get_center(), end = top_queue_positions)
+                out_lines = Line(start = out_tmp.get_center(), end = bottom_queue_positions)
                 self.play(MoveAlongPath(out_tmp, out_lines),run_time=1,rate_func=linear)
                 self.play(Uncreate(out_tmp))
+                current_positions[0] -= 0.7
             Q.append(i)
             # 进队列
             in_tmp = elements_tmp[i]
@@ -517,16 +527,18 @@ class Queue(Scene):
             actions_text = text
             #
             while len(Q) > 0  and nums[Q[len(Q)-1]] <= nums[i]:
-                text = MyText(str(nums[Q[len(Q)-1]]) + "<=" + str(nums[i]) + "弹出队列中元素")
+                text = MyText(str(nums[Q[len(Q)-1]]) + "<=" + str(nums[i]) + ",弹出" + str(nums[Q[len(Q)-1]]))
                 text.move_to([right_p + 1, top_p , 0])
                 self.play(ReplacementTransform(actions_text, text))
                 actions_text = text
                 #
-                front = Q.pop(0)
+                front = Q[-1] #从队尾删除
+                Q = Q[:-1]
                 out_tmp = elements_tmp[front]
-                out_lines = Line(start = out_tmp.get_center(), end = top_queue_positions)
+                out_lines = Line(start = out_tmp.get_center(), end = bottom_queue_positions)
                 self.play(MoveAlongPath(out_tmp, out_lines),run_time=1,rate_func=linear)
                 self.play(Uncreate(out_tmp))
+                current_positions[0] -= 0.7
             # 进队列
             Q.append(i)
             in_tmp = elements_tmp[i]
@@ -559,6 +571,7 @@ class Queue(Scene):
             self.play(MoveAlongPath(res_tmp, out_arc),run_time=2,rate_func=linear)
             final_positions[0] += 0.5
             #
-        text = TextMobject("单调队列保证了对首元素为当前滑窗的最大值,\\\\时间复杂度为O(n)", color=RED, alignment="\\raggedright").scale(0.5)
+        text = TextMobject("单调队列中的元素一直保持降序排序，\\\\保证了对首元素为当前滑窗的最大值,\\\\时间复杂度为O(n)", color=RED, alignment="\\raggedright").scale(0.5)
         text.move_to([right_p + 3, top_p , 0])
         self.play(ReplacementTransform(actions_text, text))
+        self.wait(2)
