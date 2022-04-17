@@ -1,9 +1,10 @@
 from cgitb import text
 from collections import deque
 from ctypes.wintypes import DWORD
+import queue
 from tkinter import font
 from turtle import left
-from cv2 import line
+from cv2 import circle, line
 from matplotlib.pyplot import arrow, axes
 from manim import *
 from manimlib.imports import *
@@ -84,7 +85,7 @@ class Stack(Scene):
         self.wait(2)
         #
         stack_operation_1 = BulletedList("栈顶：允许元素插入与删除的表尾称为栈顶","栈底：表头称为栈底",
-        "入栈：栈的插入操作", "出栈：栈的删除操作", dot_scale=BLUE).scale(0.5)
+        "入栈：栈的插入操作", "出栈：栈的删除操作", dot_color=BLUE).scale(0.5)
         stack_operation_1.next_to(stack_description, DOWN, buff=0.6, aligned_edge=LEFT)
         brace_1 = Brace(stack_operation_1, LEFT, color=GREEN)
         brace_1_text = TextMobject("相关\\\\", "概念").scale(0.5)
@@ -211,6 +212,28 @@ class Stack(Scene):
             #
             index += 1
 
+class CircualGroup:
+    def __init__(self, string_text, position):
+        self.string_text = string_text
+        self.position = position
+        self.Annular_Sectors = self.get_Annular_Sector()
+        self.Characters = self.get_Character()
+
+    def get_Annular_Sector(self):
+        element = VGroup()
+        for i in range(len(self.string_text)):
+            start_angle = i * TAU / 6
+            annu_sector = AnnularSector(start_angle=start_angle, angle=TAU / 6., inner_radius=0.5,outer_radius=1,color=random_color())
+            annu_sector.shift(self.position)
+            element.add(annu_sector)
+        return element
+    
+    def get_Character(self):
+        element = VGroup()
+        for i in range(len(self.string_text)):
+            character = TextMobject(self.string_text[i], color=WHITE).move_to(self.Annular_Sectors[i].get_center()).scale(0.8)
+            element.add(character)
+        return element
 
 
 class Queue(Scene):
@@ -238,7 +261,6 @@ class Queue(Scene):
         self.play(ReplacementTransform(ori_title,title))
         #
         self.queue_description()
-        #self.queue_actions()
 
     # 队列的描述
     def queue_description(self):
@@ -248,18 +270,84 @@ class Queue(Scene):
         "而在另一端删除元素,最早进入队列的元素最早离开。在队列中，允许插入的一端叫做队尾(rear)，允许删除的一端则成为队头(front)", 
         alignment="\\raggedright", font="heiti", tex_to_color_map=color_dict).scale(0.5)
         queue_description.move_to(2 * UP)
-        self.play(Write(queue_description))
+        self.play(Write(queue_description), run_time=2)
         self.queue_illustrator()
+        self.wait(2)
+        queue_text = TextMobject("C++ STL中队列声明的基本格式是:queue<结构类型> 队列名", alignment="\\raggedright").scale(0.5)
+        queue_text.next_to(queue_description, DOWN)
+        self.play(Write(queue_text))
+        queue_fun_bull_list = BulletedList("size: 返回队列中的元素个数", 
+        "empty:判断队列是否为空","push:在队尾插入一个元素",
+        "pop: 删除队列的第一个元素","front:返回队列的第一个元素",
+        "back:返回队列的最后一个元素", dot_color=BLUE).scale(0.5)
+        queue_fun_bull_list.next_to(queue_text, DOWN)
+        self.play(Write(queue_fun_bull_list), run_time=2)
+        self.wait(2)
+        self.play(Uncreate(VGroup(queue_text, queue_fun_bull_list)))
         # 双端队列
-        deque_color_dict = {"限定插入和删除操作在表的两端进行的线性表": GOLD}
+        deque_color_dict = {"双端队列":RED, "限定插入和删除操作在表的两端进行的线性表": GOLD}
         deque_description = TextMobject("双端队列(deque)是限定插入和删除操作在表的两端进行的线性表。这两端分别称作端点1和端点2",
         "在实际应用中,有输出受限的双端队列(即一个端点允许插入和删除，一个端点只允许插入的双端队列)和",
         "输入受限的双端队列(即一个端点允许插入和删除，一个端点只允许删除的双端队列)。", tex_to_color_map=deque_color_dict,
         alignment="\\raggedright", font="heiti").scale(0.5).shift(2 * UP)
         self.play(ReplacementTransform(queue_description, deque_description))
         self.queue_illustrator(is_dequeued=True)
-        #循环队列
-   
+        self.wait(2)
+        deque_text = TextMobject("C++ STL中队列声明的基本格式是:deque<结构类型> 队列名", alignment="\\raggedright").scale(0.5)
+        deque_text.next_to(deque_description, DOWN)
+        self.play(Write(deque_text))
+        deque_fun_bull_list = BulletedList("size: 返回双向队列中的元素个数", 
+        "empty:判断双向队列是否为空","push\_front:在队尾插入一个元素","push\_back:在尾部加入一个元素",
+        "pop\_front: 删除头部的元素","pop\_back:删除尾部的元素",
+        "insert:插入一个元素", "erase:删除一个元素",dot_color=BLUE).scale(0.5)
+        deque_fun_bull_list.next_to(deque_text, DOWN)
+        self.play(Write(deque_fun_bull_list), run_time=2)
+        self.wait(2)
+        self.play(Uncreate(VGroup(deque_text, deque_fun_bull_list)))
+        # 循环队列
+        circular_color_dict = {"循环队列": RED, "逻辑上的环状空间": GREEN, "队列大小是固定的":GOLD}
+        circular_queue=TextMobject("循环队列(circular queue)将队列存储空间的最后一个位置与第一个位置首尾相连，形成逻辑上的环状空间，供队列循环使用。",
+        "在循环队列结构中，当存储空间的最后一个位置已被使用，而有新的元素要入队列时，",
+        "只需要将存储空间的第一个位置空闲，将新元素加入到第一元素的位置即可。","循环队列的队列大小是固定的，可以防止伪溢出的发生。" ,
+        tex_to_color_map=circular_color_dict, alignment="\\raggedright", font="heiti").scale(0.5).shift(2 * UP)
+        self.play(ReplacementTransform(deque_description, circular_queue))
+        self.circularQueue()
+        # 优先队列
+        priority_color_dict = {"优先队列":RED, "优先级": PURPLE, "最高级先出": ORANGE, "堆排序": GOLD}
+        priority_queue = TextMobject("优先队列(priority queue)中,元素被赋予优先级, 优先级最高的先出队列。", 
+        "优先队列具有最高级先出(first in, larger in)的行为特性。","通常采用堆排序实现。",
+        tex_to_color_map=priority_color_dict, alignment="\\raggedright", font="heiti").scale(0.5).shift(2 * UP)
+        self.play(ReplacementTransform(circular_queue, priority_queue))
+        #
+        priority_text = TextMobject("C++ STL中优先队列声明的基本格式是:priority\_queue<结构类型> 队列名", alignment="\\raggedright").scale(0.5)
+        priority_text.next_to(priority_queue, DOWN)
+        self.play(Write(priority_text))
+        priority_bull_list = BulletedList("从大到小排序:priority\_queue<int,vector<int>,less<int> >q;",
+        "从大到小排序:priority\_queue<int,vector<int>,greater<int> >q;",dot_color=BLUE).scale(0.5)
+        priority_bull_list.next_to(priority_text, DOWN, aligned_edge=LEFT)
+        self.play(Write(priority_bull_list), run_time=2)
+        priotiry_fun_bull_list = BulletedList("size: 返回优先队列中的元素个数", 
+        "empty:判断优先队列是否为空","push:向优先队列插入元素",
+        "pop: 删除优先队列的第一个元素","top:返回优先队列的第一个元素",dot_color=BLUE).scale(0.5)
+        priotiry_fun_bull_list.next_to(priority_bull_list, DOWN, aligned_edge=LEFT)
+        self.play(Write(priotiry_fun_bull_list), run_time=2)
+        self.wait(2)
+        self.play(Uncreate(VGroup(priority_text, priority_bull_list, priotiry_fun_bull_list)))
+        # 单调队列
+        monotone_color_dict = {"单调队列":RED, "某个范围内的最小值或者最大值": ORANGE, "N=8": ORANGE, "k=3": BLUE}
+        monotone_queue = TextMobject("单调队列(monotone queue)是有某种单调性的队列,它分为两种,一种是单调递增,另一种是单调递减的。",
+        "单调队列通常用来得到某个范围内的最小值或者最大值", tex_to_color_map=monotone_color_dict,
+        alignment="\\raggedright", font="heiti").scale(0.5).shift(2 * UP)
+        self.play(ReplacementTransform(priority_queue, monotone_queue))
+        self.wait(2)
+        monotone_queue_text = TextMobject("有一整数数组nums=[1,3,-1,-3,5,3,6,7],有N=8个元素,",
+        "有一个大小为k=3的滑动窗口从数组的最左侧移动到数组的最右侧",
+        "每次只能看到滑动窗口中的k个数字,滑动窗口每次只向右移动一位。",tex_to_color_map=monotone_color_dict,
+        alignment="\\raggedright", font="heiti").scale(0.5)
+        monotone_queue_text.shift(2 * UP)
+        self.play(ReplacementTransform(monotone_queue, monotone_queue_text))
+        self.mon_queue_action()         
+  
 
     def queue_illustrator(self, is_dequeued=False):
         line_left = -2
@@ -310,27 +398,167 @@ class Queue(Scene):
         self.wait(3)
         self.play(Uncreate(VGroup(lines_group, object_group, arrow_group)))
 
-    # 队列动作实例
-    def queue_actions(self):
-         # 队列的线条
-        line_top = 1
-        line_bottom = -3
-        line_left = 2
-        line_1 = Line(start = [line_left, line_bottom, 0], end = [line_left, line_top, 0], color = GREEN)
-        line_2 = Line(start = [line_left + 1, line_bottom, 0], end = [line_left + 1, line_top, 0], color = GREEN)
-        line_3 = Line(start = [line_left, line_bottom, 0], end = [line_left + 1, line_bottom, 0], color = GREEN)
-        stack_txt = MyText("栈").next_to(line_3, DOWN)
-        self.play(ShowCreation(VGroup(line_1, line_2, line_3)), ShowCreation(stack_txt))
+    # 循环队列
+    def circularQueue(self):
+        texts = ["假设循环队列的空间大小为MaxSize,当队列为空时,front=rear;",
+        "而当队列空间全占满时,有front=rear。","为了区分这两种情况,规定循环队列最多只有MaxSize-1个队列元素",
+        "队列判空的条件是front=rear","队列判满的条件是front=(rear+1)\% MaxSize","队列的长队为(rear-front + MaxSize) \% Maxsize"]
+        string_text = "ABCDEF"
+        position = DOWN + 4 * LEFT
+        circual =  CircualGroup(string_text, position)
+        # arrow
+        front_arrow = arrow_build(start=RIGHT, end=LEFT, color=BLUE, string_txt="front", direction=RIGHT)
+        rear_arrow = arrow_build(start=RIGHT, end=LEFT, color=GREEN, string_txt="rear", direction=RIGHT)
+        self.play(Write(circual.Annular_Sectors))
+        rear_arrow.next_to(circual.Annular_Sectors[0], RIGHT)
+        front_arrow.next_to(rear_arrow, 0.3 * UP)
+        circual_text = TextMobject("循环队列").scale(0.5)
+        circual_text.next_to(circual.Annular_Sectors, DOWN)
+        self.play(Write(VGroup(front_arrow, rear_arrow, circual_text)))
+        # 队列的一般情况
+        for i in range(len(string_text)):
+            self.play(Write(circual.Characters[i]))
+            self.play(Rotating(rear_arrow, radians=TAU/6 , run_time=1, about_point=position))
+        text = TextMobject(texts[0], texts[1], texts[2], alignment="\\raggedright", font="heiti").scale(0.5)
+        text.move_to([2.5, 0, 0])
+        self.play(Write(text))
+        bul_list = BulletedList(texts[3], texts[4], texts[5]).scale(0.5)
+        bul_list.move_to([2.5, -1, 0])
+        self.play(ReplacementTransform(text, bul_list))
+        self.play(Uncreate(VGroup(circual.Annular_Sectors, circual.Characters, front_arrow, rear_arrow, circual_text, text, bul_list)))
 
-
-class StackToQueue(Scene):
-    def construct(self):
-        self.camera.background_color = BLACK
-
-
-class QueueToStack(Scene):
-    def construct(self):
-        self.camera.background_color = BLACK
-
-
-
+    def mon_queue_action(self):
+        nums = [1,3,-1,-3,5,3,6,7]
+        length = len(nums)
+        # array
+        elements = VGroup()
+        for i, x in enumerate(nums):
+            cell = Integer(x).set_color(BLUE)
+            if i != 0:
+                cell.next_to(elements[i-1], RIGHT, buff=1)
+            else:
+                cell.move_to([-5, 0, 0])
+            elements.add(cell)
+        # copy
+        elements_tmp = elements.copy()
+        # index
+        Indexs = VGroup()
+        for i in range(length):
+            index = Integer(i).scale(0.4)
+            index.next_to(elements[i], 0.5*UP)
+            Indexs.add(index)
+        #
+        self.play(Write(VGroup(elements, Indexs)), run_time=2)
+        rect = Rectangle(color=RED, width=4.0, height=1.0)
+        rect.move_to(elements[1].get_center())
+        self.play(Write(rect), run_time=1)
+        # 单调队列
+        left_p, right_p = -5, 1
+        bottom_p , top_p = -2, -1
+        line_1 = Line(start = [left_p, top_p, 0], end = [right_p, top_p, 0], color = YELLOW)
+        line_2 = Line(start = [left_p, bottom_p, 0], end = [right_p, bottom_p, 0], color = YELLOW)
+        stack_txt = MyText("单调队列").next_to(line_2, DOWN)
+        #
+        top_queue_positions = [left_p - 0.5, (bottom_p + top_p) / 2.0, 0]
+        bottom_queue_positions = [right_p + 0.5, (bottom_p + top_p) / 2.0, 0]
+        current_positions = [left_p, (bottom_p + top_p) / 2.0, 0]
+        final_positions = [left_p, bottom_p - 1, 0]
+        res_text = TextMobject("滑动窗口\\\\最大值", color=RED, front="heiti").scale(0.6)
+        res_text.move_to([left_p - 1, bottom_p - 1, 0])
+        #
+        self.play(ShowCreation(VGroup(line_1, line_2, stack_txt, res_text)))
+        #
+        actions_text = MyText("单调队列求滑窗大小过程展示")
+        actions_text.move_to([right_p + 2, top_p , 0])
+        self.play(Write(actions_text))
+        res = []
+        Q = []
+        for i in range(3):
+            text = MyText("第1个滑动窗口")
+            text.move_to([right_p + 2, top_p , 0])
+            self.play(ReplacementTransform(actions_text, text))
+            actions_text = text
+            while len(Q) > 0 and nums[Q[len(Q)-1]] <= nums[i]:
+                text = MyText(str(nums[Q[len(Q)-1]]) + "<=" + str(nums[i]) + "弹出队列中元素")
+                text.move_to([right_p + 2, top_p , 0])
+                self.play(ReplacementTransform(actions_text, text))
+                actions_text = text
+                front = Q.pop(0) 
+                #出队列
+                out_tmp = elements_tmp[front]
+                out_lines = Line(start = out_tmp.get_center(), end = top_queue_positions)
+                self.play(MoveAlongPath(out_tmp, out_lines),run_time=1,rate_func=linear)
+                self.play(Uncreate(out_tmp))
+            Q.append(i)
+            # 进队列
+            in_tmp = elements_tmp[i]
+            in_arc = ArcBetweenPoints(start=in_tmp.get_center(), end=np.array(bottom_queue_positions), angle=-TAU / 4)
+            self.play(MoveAlongPath(in_tmp, in_arc),run_time=2,rate_func=linear)
+            in_lines = Line(start = bottom_queue_positions, end = current_positions)
+            self.play(MoveAlongPath(in_tmp, in_lines),run_time=2,rate_func=linear)
+            current_positions[0] += 0.7
+        res.append(nums[Q[0]])
+        #
+        text = MyText("取对首元素为:第1个滑动窗口的最大值")
+        text.move_to([right_p + 2, top_p , 0])
+        self.play(ReplacementTransform(actions_text, text))
+        actions_text = text
+        #
+        res_tmp = elements_tmp[Q[0]].copy()
+        out_arc = ArcBetweenPoints(start=np.array(res_tmp.get_center()), end=np.array(final_positions), angle= - TAU / 4)
+        self.play(MoveAlongPath(res_tmp, out_arc),run_time=2,rate_func=linear)
+        final_positions[0] += 0.5
+        for i in range(3, length):
+            rect.move_to(elements[i-1].get_center())
+            self.play(Write(rect), run_time=1)
+            text = MyText("第"+str(i-1) + "个滑动窗口")
+            text.move_to([right_p + 2, top_p , 0])
+            self.play(ReplacementTransform(actions_text, text))
+            actions_text = text
+            #
+            while len(Q) > 0  and nums[Q[len(Q)-1]] <= nums[i]:
+                text = MyText(str(nums[Q[len(Q)-1]]) + "<=" + str(nums[i]) + "弹出队列中元素")
+                text.move_to([right_p + 1, top_p , 0])
+                self.play(ReplacementTransform(actions_text, text))
+                actions_text = text
+                #
+                front = Q.pop(0)
+                out_tmp = elements_tmp[front]
+                out_lines = Line(start = out_tmp.get_center(), end = top_queue_positions)
+                self.play(MoveAlongPath(out_tmp, out_lines),run_time=1,rate_func=linear)
+                self.play(Uncreate(out_tmp))
+            # 进队列
+            Q.append(i)
+            in_tmp = elements_tmp[i]
+            in_arc = ArcBetweenPoints(start=in_tmp.get_center(), end=np.array(bottom_queue_positions), angle=-TAU / 4)
+            self.play(MoveAlongPath(in_tmp, in_arc),run_time=2,rate_func=linear)
+            in_lines = Line(start = bottom_queue_positions, end = current_positions)
+            self.play(MoveAlongPath(in_tmp, in_lines),run_time=2,rate_func=linear)
+            current_positions[0] += 0.7
+            while Q[0] <= (i-3):
+                front = Q.pop(0)
+                #
+                text = MyText("队列中仅保持当前滑窗的元素，弹出前滑窗的元素"+str(nums[front]))
+                text.move_to([right_p + 2, top_p , 0])
+                self.play(ReplacementTransform(actions_text, text))
+                actions_text = text
+                #
+                out_tmp = elements_tmp[front]
+                out_lines = Line(start = out_tmp.get_center(), end = top_queue_positions)
+                self.play(MoveAlongPath(out_tmp, out_lines),run_time=2,rate_func=linear)
+                self.play(Uncreate(out_tmp))
+            #
+            text = MyText("取对首元素为:第"+ str(i-1) +"个滑动窗口的最大值")
+            text.move_to([right_p + 2, top_p , 0])
+            self.play(ReplacementTransform(actions_text, text))
+            actions_text = text
+            #
+            res.append(nums[Q[0]])
+            res_tmp = elements_tmp[Q[0]].copy()
+            out_arc = ArcBetweenPoints(start=res_tmp.get_center(), end=np.array(final_positions), angle= - TAU / 4)
+            self.play(MoveAlongPath(res_tmp, out_arc),run_time=2,rate_func=linear)
+            final_positions[0] += 0.5
+            #
+        text = TextMobject("单调队列保证了对首元素为当前滑窗的最大值,\\\\时间复杂度为O(n)", color=RED, alignment="\\raggedright").scale(0.5)
+        text.move_to([right_p + 3, top_p , 0])
+        self.play(ReplacementTransform(actions_text, text))
