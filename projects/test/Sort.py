@@ -50,7 +50,7 @@ class bubbleSort(Scene):
         title = TextMobject("冒泡排序", fontsize=32).set_color(RED)
         title.to_edge(UP)
         self.play(Write(title))
-        text_1  = MyText("冒泡排序， 是最简单的排序方法。它重复地走访过要排序的元素列，依次比较两个相邻的元素,")
+        text_1  = MyText("冒泡排序, 是最简单的排序方法。它重复地走访过要排序的元素列,依次比较两个相邻的元素,")
         text_1.set_color_by_t2c(t2c={"冒泡排序": RED})
         text_2 = MyText("如果顺序错误就把他们交换过来。重复地进行直到没有相邻元素需要交换。")
         text_2.next_to(text_1, DOWN)
@@ -58,15 +58,15 @@ class bubbleSort(Scene):
         text_groups.shift(2*UP)
         self.play(Write(text_groups))
         self.wait(1)
-        text_3 = MyText("现在有一数组nums=[4, 1, 9, 3, 2, 7, 10, 6, 8, 5], 包含10个元素，使用冒泡排序对此数组进行升序排列。")
+        text_3 = MyText("现在有一数组nums=[4, 1, 9, 3, 2, 7, 10, 6, 8, 5], 包含10个元素,使用冒泡排序对此数组进行升序排列。")
         text_3.set_color_by_t2c(t2c={"nums=[4, 1, 9, 3, 2, 7, 10, 6, 8, 5]": GREEN, "升序": RED_E})
         text_3.shift(UP*2)
         self.play(ReplacementTransform(text_groups, text_3))
         text_steps = BulletedList(
-            "第一轮：从nums[0]开始，依次比较两个相邻的元素直到nums[9], 如果左边的元素大于右边的元素, 交换它们。那么nums[9]就是最大的元素", 
-            "第二轮：从nums[0]开始，依次比较两个相邻的元素直到nums[8], 如果左边的元素大于右边的元素，交换它们。那么nums[8]就是第二大的元素",
+            "第一轮:从nums[0]开始,依次比较两个相邻的元素直到nums[9], 如果左边的元素大于右边的元素, 交换它们。那么nums[9]就是最大的元素", 
+            "第二轮:从nums[0]开始,依次比较两个相邻的元素直到nums[8], 如果左边的元素大于右边的元素,交换它们。那么nums[8]就是第二大的元素",
             "...",
-            "第九轮：比较nums[0]和nums[1]，如果nums[0]大于nums[1]，交换它们。至此排列完成", dot_color=BLUE
+            "第九轮:比较nums[0]和nums[1],如果nums[0]大于nums[1],交换它们。至此排列完成", dot_color=BLUE
         )
         text_steps.scale(0.5)
         text_steps.next_to(text_3, DOWN * 2)
@@ -92,10 +92,10 @@ class bubbleSort(Scene):
         self.play(ShowCreation(group))
         #
         # bubble sort
-        tmp = MyText("开始排序：")
+        tmp = MyText("开始排序:")
         tmp.next_to(arr_mob[0], 2 * UP)
         for i in range(len(arr) - 1):
-            text = MyText("第" + str(i + 1) + "轮：", color=RED)
+            text = MyText("第" + str(i + 1) + "轮:", color=RED)
             text.next_to(arr_mob[0], UP)
             self.play(ReplacementTransform(tmp, text))
             for j in range(len(arr) - 1 - i):
@@ -132,13 +132,13 @@ class bubbleSort(Scene):
         rendered_code = Code(file_name="F:\manim\\projects\\test\\codes\\bubbleSort.py", tab_width=4, background="window", language="Python").scale(0.7)
         rendered_code.to_edge(LEFT)
         # 性能分析
-        text_4 = TextMobject("以升序为例，假设待排序数组长度为n，冒泡排序需要两层for循环，\\\\",
-            "冒泡排序算法在每一轮排序中会使一个元素排到一端，\\\\",
-            "外层循环循环n-1次，每轮排序都需要相邻的两个元素进行比较。\\\\",
-            "在最坏的情况（降序排列）下，内层循环最多时循环n-1次，时间复杂度为$O\left( n^{2}\\right)$;\\\\",
-            "在最好的情况（升序排列）下，最少循环0次，时间复杂度为$O\left( n \\right)$。\\\\", 
+        text_4 = TextMobject("以升序为例,假设待排序数组长度为n,冒泡排序需要两层for循环,\\\\",
+            "冒泡排序算法在每一轮排序中会使一个元素排到一端,\\\\",
+            "外层循环循环n-1次,每轮排序都需要相邻的两个元素进行比较。\\\\",
+            "在最坏的情况（降序排列）下,内层循环最多时循环n-1次,时间复杂度为$O\left( n^{2}\\right)$;\\\\",
+            "在最好的情况（升序排列）下,最少循环0次,时间复杂度为$O\left( n \\right)$。\\\\", 
             "冒泡排序的平均时间复杂度为$O\left( n^{2} \\right)$。\\\\",
-            "冒泡排序用到的空间只有交换时的临时变量，空间复杂度为$O\left( 1 \\right)$。", alignment="\\raggedright").scale(0.4)
+            "冒泡排序用到的空间只有交换时的临时变量,空间复杂度为$O\left( 1 \\right)$。", alignment="\\raggedright").scale(0.4)
         text_4.next_to(rendered_code, RIGHT)
         self.play(ShowCreation(rendered_code))
         self.play(ShowCreation(text_4), runtime=2)
@@ -248,8 +248,8 @@ class ShellSort(Scene):
         title = TextMobject("冒泡排序", fontsize=32).set_color(RED)
         title.to_edge(UP)
         self.play(Write(title))
-        shell_text_1 = MyText("希尔排序是将待排序的数组元素 按下标的一定增量分组 ，分成多个子序列，然后对各个子序列进行直接插入排序算法排序;")
-        shell_text_2 = MyText("然后依次缩减增量再进行排序，直到增量为1时，进行最后一次直接插入排序，排序结束。")
+        shell_text_1 = MyText("希尔排序是将待排序的数组元素 按下标的一定增量分组 ,分成多个子序列,然后对各个子序列进行直接插入排序算法排序;")
+        shell_text_2 = MyText("然后依次缩减增量再进行排序,直到增量为1时,进行最后一次直接插入排序,排序结束。")
         shell_text_2.next_to(shell_text_1, DOWN)
         shell_text = VGroup(shell_text_1, shell_text_2)
         shell_text.shift(2*UP)
@@ -290,8 +290,8 @@ class Selection(Scene):
         title = TextMobject("选择排序", fontsize=32).set_color(RED)
         title.to_edge(UP)
         self.play(Write(title))
-        # shell_text_1 = MyText("希尔排序是将待排序的数组元素 按下标的一定增量分组 ，分成多个子序列，然后对各个子序列进行直接插入排序算法排序;")
-        # shell_text_2 = MyText("然后依次缩减增量再进行排序，直到增量为1时，进行最后一次直接插入排序，排序结束。")
+        # shell_text_1 = MyText("希尔排序是将待排序的数组元素 按下标的一定增量分组 ,分成多个子序列,然后对各个子序列进行直接插入排序算法排序;")
+        # shell_text_2 = MyText("然后依次缩减增量再进行排序,直到增量为1时,进行最后一次直接插入排序,排序结束。")
         # shell_text_2.next_to(shell_text_1, DOWN)
         # shell_text = VGroup(shell_text_1, shell_text_2)
         # shell_text.shift(2*UP)
@@ -336,8 +336,8 @@ class Merge(Scene):
         title = TextMobject("归并排序", fontsize=32).set_color(RED)
         title.to_edge(UP)
         self.play(Write(title))
-        # shell_text_1 = MyText("希尔排序是将待排序的数组元素 按下标的一定增量分组 ，分成多个子序列，然后对各个子序列进行直接插入排序算法排序;")
-        # shell_text_2 = MyText("然后依次缩减增量再进行排序，直到增量为1时，进行最后一次直接插入排序，排序结束。")
+        # shell_text_1 = MyText("希尔排序是将待排序的数组元素 按下标的一定增量分组 ,分成多个子序列,然后对各个子序列进行直接插入排序算法排序;")
+        # shell_text_2 = MyText("然后依次缩减增量再进行排序,直到增量为1时,进行最后一次直接插入排序,排序结束。")
         # shell_text_2.next_to(shell_text_1, DOWN)
         # shell_text = VGroup(shell_text_1, shell_text_2)
         # shell_text.shift(2*UP)

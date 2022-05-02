@@ -90,15 +90,15 @@ class DFS(Scene):
         "为了避免同一顶点被访问多次，在遍历图的过程中，必须记下每个已访问过的顶点。",alignment="\\raggedright", 
         tex_to_color_map=color_dict, font="heiti").scale(0.5)
         graph_text.shift(2 * UP)
-        self.play(Write(graph_text), run_time=5)
+        self.play(Write(graph_text), run_time=2)
         bl_text = BulletedList("指定起始起点","每个顶点仅被访问一次", "设置一个辅助数据visited, 记录顶点的访问情况。", dot_color=BLUE).scale(0.45)
         bl_text.next_to(graph_text, DOWN)
-        self.play(Write(bl_text), run_time=3)
+        self.play(Write(bl_text), run_time=1)
         text = TextMobject("图的遍历算法包括深度优先搜索(Depth First Search,DFS)和广度优先搜索(Breadth First Search, BFS)。","这两种搜索适用于无向图和有向图。",
         alignment="\\raggedright", tex_to_color_map={"深度优先搜索": GREEN, "广度优先搜索": BLUE},font="heiti").scale(0.5)
         text.next_to(bl_text, DOWN)
-        self.play(Write(text), run_time=3)
-        self.wait(3)
+        self.play(Write(text), run_time=1)
+        self.wait(5)
         self.play(Uncreate(VGroup(graph_text, bl_text, text)))
         #
         color_dict_1 = {"深度优先搜索算法(Depth First Search,DFS)":RED, "对于每一个可能的分支路径深入到不能深入为止":ORANGE}
@@ -106,12 +106,12 @@ class DFS(Scene):
         "其思想简要可简要描述为对于每一个可能的分支路径深入到不能深入为止，而且每个节点只能访问一次。",alignment="\\raggedright", font="heiti",
         tex_to_color_map=color_dict_1).scale(0.5)
         text_1.shift(2 * UP)
-        self.play(Write(text_1), run_time=5)
-        text_2 = BulletedList("步骤一: 从图中指定顶点v出发,访问此顶点,然后依次从v的未被访问的邻接点出发深度优先遍历图,直至图中所有与v有路径连通的顶点都被访问到;",
+        self.play(Write(text_1), run_time=3)
+        text_2 = BulletedList("步骤一: 从图中指定顶点v出发,访问此顶点,然后依次从v的未被访问的邻接点出发深度优先遍历,直至图中所有与v有路径连通的顶点都被访问到;",
         "步骤二：若此时图中尚有顶点未被访问,则选图中一个未曾被访问的顶点作起始点，重复步骤一，直至图中所有顶点都被访问到为止。", dot_color=BLUE).scale(0.45)
         text_2.next_to(text_1, DOWN, aligned_edge=LEFT)
-        self.play(Write(text_2), run_time=5)
-        self.wait(3)
+        self.play(Write(text_2), run_time=2)
+        self.wait(5)
         self.play(Uncreate(VGroup(text_1, text_2)))
 
     def process(self):
@@ -180,8 +180,8 @@ class DFS(Scene):
         text_abstract = TextMobject("DFS的思想概括就是:一直走一直走,不撞南墙不回头。显而易见,DFS可用递归实现", font="heiti",
         alignment="\\raggedright", color_dict={"递归", RED}).scale(0.5)
         text_abstract.shift(BOTTOM + UP)
-        self.play(Write(text_abstract), run_time=2)
-        self.wait(3)
+        self.play(Write(text_abstract), run_time=1)
+        self.wait(5)
         self.play(Uncreate(VGroup(graph.elements, graph.line_groups)))
         self.play(Uncreate(VGroup(text_groups, text_abstract)))
     
@@ -189,7 +189,7 @@ class DFS(Scene):
         #
         dfs_code = Code(file_name="F:\manim\\projects\\test\\codes\\DFS.cpp", insert_line_no=False, style=code_styles_list[11]).scale(0.8)
         dfs_code.move_to([0, -0.5, 0])
-        self.play(Write(dfs_code), run_time=5)
+        self.play(Write(dfs_code), run_time=2)
         self.wait(5)
         #
         color_dict_1 = {"数据结构-栈": RED, "堆栈的溢出": GOLD, "非递归": BLUE}
@@ -208,7 +208,7 @@ class DFS(Scene):
         self.play(Uncreate(VGroup(text_dfs_error,non_recursive_text, non_recursive_tex_list)))
         dfs_stack_code = Code(file_name="F:\manim\\projects\\test\\codes\\DFS_Stack.cpp", background="window",style=code_styles_list[11])
         dfs_stack_code.move_to([0, 0, 0])
-        self.play(Write(dfs_stack_code), run_time=3)
+        self.play(Write(dfs_stack_code), run_time=2)
         self.wait(5)
         self.play(Uncreate(dfs_stack_code))
         
@@ -238,6 +238,7 @@ class DFS(Scene):
         line_3 = Line(start = [left_p, top_p, 0], end = [left_p, bottom_p, 0], color = YELLOW)
         stack_txt = MyText("栈").next_to(line_3, LEFT)
         self.play(ShowCreation(VGroup(line_1, line_2, line_3)), ShowCreation(stack_txt))
+        self.wait(1)
         # DFS
         length = len(data)
         graphs_map = np.zeros((length, length))
@@ -327,6 +328,7 @@ class BFS(Scene):
         self.process()
         self.codes_display()
         self.action()
+        self.wait(2)
 
     def description(self):
         color_dict_1 = {"广度优先搜索(Breadth First Search, BFS)": PURPLE, 

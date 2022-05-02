@@ -30,6 +30,7 @@ def arrow_build(start, end, color, string_txt, direction):
     text.next_to(arrow, direction)
     return VGroup(arrow, text)
 
+
 class TestScene(Scene):
     def construct(self):
         logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold").scale(0.5)
@@ -45,7 +46,11 @@ class TestScene(Scene):
         logo = VGroup(logo_ellipse, logo_text)
         logo.shift(np.array((6.5, 3.5, 0.)))  # left/right  up/dowm
         self.play(Write(logo))
-        self.mon_queue_action()
+        heap_desc_1 = TextMobject("堆的定义如下:n个元素的序列$\{k_{1}, k_{2}, \cdots , k_{n}\}$").scale(0.5)
+        heap_desc_2 = TexMobject("\{k_{1}, k_{2}, \cdots , k_{n}\}").scale(0.5)
+        heap_desc_3 = TextMobject("当且满足如下关系时,称之为堆。",alignment="\\raggedright").scale(0.5)
+        self.play(Write(VGroup(heap_desc_1, heap_desc_2, heap_desc_3).arrange_submobjects(RIGHT).shift(2*UP)))
+        #self.mon_queue_action()
         # dots = Dot(point=[2, 1, 0], color=PURPLE)
         # self.play(Write(dots))
         # rear_arrow = arrow_build(start=RIGHT, end=LEFT, color=GREEN, string_txt="rear", direction=RIGHT)
