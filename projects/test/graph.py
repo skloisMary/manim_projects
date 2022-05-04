@@ -335,18 +335,18 @@ class BFS(Scene):
         "树的层次遍历": MAROON, "先被访问的顶点的邻接点": BLUE,
         "后被访问的顶点的邻接点": GREEN,"依次":ORANGE,"先于": RED}
         text_1 = TextMobject("广度优先搜索(Breadth First Search, BFS)遍历类似于树的层次遍历。", 
-        "假设从图中某顶点v出发,在访问了v之后依次访问v的各个未曾访问的邻接点,然后从这些临界点出发依次访问它们的邻接点,",
+        "假设从图中某顶点v出发,在访问了v之后依次访问v的各个未曾访问的邻接点,然后从这些邻接点出发依次访问它们未曾访问的邻接点,",
         "并使先被访问的顶点的邻接点先于后被访问的顶点的邻接点被访问,直至图中所有已被访问的顶点的邻接点都被访问到。",
         "若此时图中尚有顶点未被访问,则另选图中一个未曾被访问的顶点作为起始点,重复上述过程,直至图中所有的顶点被访问为止.", alignment="\\raggedright", 
         tex_to_color_map=color_dict_1, font="heiti").scale(0.5)
         text_1.shift(1.5 * UP)
-        self.play(Write(text_1), run_time=5)
-        text_2 = BulletedList("与深度优先搜索不撞南墙不回头的过程不同,广度优点搜索由近及远,依次访问与起始顶点有路径相通且路径长度为1,2,...的顶点。",
-        "与深度优先搜索类似,在遍历的过程中也需要一个访问标志数组。",
+        self.play(Write(text_1), run_time=2)
+        text_2 = BulletedList("与深度优先搜索不撞南墙不回头的过程不同,广度优先搜索由近及远,依次访问与起始顶点有路径相通且路径长度为1,2,...的顶点。",
+        "与深度优先搜索类似,广度优先搜索在遍历的过程中也需要一个访问标志数组。",
         "为了顺次访问路径为2,3,...的顶点，广度优先搜索利用数据结构-队列储存已被访问的顶点", dot_color=BLUE, font="heiti").scale(0.45)
         text_2.next_to(text_1, DOWN, aligned_edge=LEFT)
-        self.play(Write(text_2), run_time=3)
-        self.wait(3)
+        self.play(Write(text_2), run_time=2)
+        self.wait(5)
         self.play(Uncreate(VGroup(text_1, text_2)))
 
     def process(self):
@@ -373,6 +373,8 @@ class BFS(Scene):
             path_education_text.move_to(lines_center[i])
             lines_center_group.add(path_education_text)
         self.play(ShowCreation(lines_center_group), run_time=2)
+        self.wait(4)
+        #
         begin = 0
         flags[begin] = 1
         tmp = begin
@@ -419,18 +421,18 @@ class BFS(Scene):
                     Q.append(i)
                     flags[i] = 1
         
-        results_text = TextMobject("图的BFS遍历得到的顶点访问序列为: 1,2,8,3,4,9,10,5,6,7", alignment="\\raggedright", font="heiti").scale(0.5)
+        results_text = TextMobject("图的BFS遍历得到的顶点访问序列为: 1 2 8 3 4 9 10 5 6 7", alignment="\\raggedright", font="heiti").scale(0.5)
         results_text.next_to(bfs_description, DOWN, aligned_edge=LEFT)
         self.play(Write(results_text), run_time=1)
-        self.wait(3)
+        self.wait(5)
         self.play(Uncreate(VGroup(bfs_description, results_text)))
         self.play(Uncreate(VGroup(graph.elements, graph.line_groups,lines_center_group)))
 
     def draw_code_all_lines_at_a_time(self, Code):
-        self.play(Write(Code.background_mobject), run_time=0.5)
-        self.play(Write(Code.line_numbers), run_time=0.5)
+        self.play(Write(Code.background_mobject), run_time=0.1)
+        self.play(Write(Code.line_numbers), run_time=0.1)
         for i in range(Code.code.__len__()):
-            self.play(Write(Code.code[i]), run_time=0.5)
+            self.play(Write(Code.code[i]), run_time=0.2)
     def codes_display(self):
         bfs_code = Code(file_name="F:\manim\\projects\\test\\codes\\BFS_queue.cpp", style=code_styles_list[11]).scale(0.8)
         bfs_code.move_to([0, -0.5, 0])
@@ -470,6 +472,8 @@ class BFS(Scene):
         line_2 = Line(start = [left_p, bottom_p, 0], end = [right_p, bottom_p, 0], color = YELLOW)
         stack_txt = MyText("队列").next_to(line_2, DOWN)
         self.play(ShowCreation(VGroup(line_1, line_2)), ShowCreation(stack_txt))
+        # 
+        self.wait(2)
         #
         begin = 0
         tmp_graph_element = graph.elements.copy()
