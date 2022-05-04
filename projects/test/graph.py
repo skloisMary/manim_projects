@@ -53,6 +53,111 @@ class Graph:
         return lines_groups
 
 
+class  DFS_BFS_cover(Scene):
+    def construct(self):
+        logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold").scale(0.5)
+        height = logo_text.get_height() + 2 * 0.1
+        width = logo_text.get_width() + 2 * 0.15
+        logo_ellipse = Ellipse(
+            width=width,           
+            height=height, stroke_width=0.5
+        )
+        logo_ellipse.set_fill(color=PURPLE,opacity=0.3)
+        logo_ellipse.set_stroke(color=GRAY)
+        logo_text.move_to(logo_ellipse.get_center())
+        logo = VGroup(logo_ellipse, logo_text)
+        logo.shift(np.array((6.5, 3.5, 0.)))
+        self.play(Write(logo))
+        #self.DFS()
+        self.BFS()
+    
+    def DFS(self):
+        new_positions = [[3,2,0],[4,1,0],[5.5,0,0],[3,0,0],[4,-1,0],[3,-2,0],[2,-1,0],[2,1,0],[1,0,0], [1,1,0]]
+        radius = 0.3
+        graph = Graph(data, graph_datas, new_positions, radius)
+        graph.elements[0][0].set_fill(MAROON, opacity=0.6)
+        self.play(ShowCreation(VGroup(graph.elements, graph.line_groups)))
+        circle_2 = graph.elements[1].copy()
+        circle_2.move_to([-5,-2.5, 0])
+        circle_1 = graph.elements[0].copy()
+        circle_1.move_to([0, -3.5, 0 ])
+        self.play(ShowCreation(VGroup(circle_1, circle_2)))
+        dot_tmp= Dot(color=GREEN)
+        lines_path = Line(start=graph.elements[0].get_center(), end=graph.elements[1].get_center())
+        graph.elements[1][0].set_fill(MAROON, opacity=0.6)
+        self.play(MoveAlongPath(dot_tmp, lines_path),run_time=2,rate_func=linear)
+        text_1 = TextMobject("深度优先搜索", font="heiti", color=YELLOW, t2w={"weight": BOLD}).scale(2)
+        text_1.move_to(3 * LEFT + 2.5 * UP)
+        text_2 = TextMobject("DFS",font="heiti", color=RED, t2w={"weight": BOLD}).scale(2)
+        text_2.next_to(text_1, 2.5 * DOWN)
+        text_3 = TextMobject("栈    非递归实现",font="heiti", color=MAROON, t2w={"weight": BOLD})
+        text_3.move_to([-4, -1, 0])
+        self.play(Write(VGroup(text_1, text_2, text_3)))
+        left_p, right_p = -5.5, -1
+        bottom_p , top_p = -3, -2
+        line_1 = Line(start = [left_p, top_p, 0], end = [right_p, top_p, 0], color = GOLD)
+        line_2 = Line(start = [left_p, bottom_p, 0], end = [right_p, bottom_p, 0], color = GOLD)
+        line_3 = Line(start = [left_p, top_p, 0], end = [left_p, bottom_p, 0], color = GOLD)
+        stack_txt = MyText("栈").next_to(line_3, LEFT).scale(0.8)
+        self.play(ShowCreation(VGroup(line_1, line_2, line_3)), ShowCreation(stack_txt))
+
+    def BFS(self):
+        new_positions = [[4,2,0],[5,1,0],[5.5,0,0],[4,0,0],[5,-1,0],[4,-2,0],[3,-1,0],[3,1,0],[2,0,0], [2,1,0]]
+        radius = 0.3
+        for i in range(len(new_positions)):
+            new_positions[i][1] += 1 
+        graph = Graph(data, graph_datas, new_positions, radius)
+        self.play(ShowCreation(VGroup(graph.elements, graph.line_groups)))
+        circle_1 = graph.elements[0].copy()
+        circle_1.move_to([-6, -2.5, 0 ])
+        circle_2 = graph.elements[1].copy()
+        circle_2.move_to([-0.7,-2.5, 0])
+        circle_8 = graph.elements[7].copy()
+        circle_8.move_to([-0.1,-2.5, 0])
+        self.play(ShowCreation(VGroup(circle_1, circle_2, circle_8)))
+        #
+        length = len(data)
+        graphs_map = np.zeros((length, length))
+        lines_center = []
+        for i in range(len(graph_datas)):
+            points_1 = graph_datas[i][0] - 1
+            points_2 = graph_datas[i][1] - 1
+            graphs_map[points_1][points_2] = 1
+            graphs_map[points_2][points_1] = 1
+            center_positions = (graph.elements[points_1].get_center() + graph.elements[points_2].get_center()) / 2
+            lines_center.append(center_positions)
+        #
+        path_distance = [1, 1, 2, 2, 3, 3, 3, 4, 4, 2, 2, 3]
+        lines_center_group = VGroup()
+        for i in range(len(path_distance)):
+            path_education_text = TextMobject(str(path_distance[i])).scale(0.5)
+            path_education_text.move_to(lines_center[i])
+            lines_center_group.add(path_education_text)
+        self.play(ShowCreation(lines_center_group), run_time=2)
+        graph.elements[0][0].set_fill(MAROON, opacity=0.6)
+        graph.elements[1][0].set_fill(MAROON, opacity=0.6)
+        graph.elements[7][0].set_fill(MAROON, opacity=0.6)
+        dot_tmp= Dot(color=GREEN)
+        dot_tmp.move_to(graph.elements[7].submobjects[0].get_center())
+        self.play(Write(dot_tmp))
+        ################################
+        text_1 = TextMobject("广度优先搜索", font="heiti", color=YELLOW, t2w={"weight": BOLD}).scale(2)
+        text_1.move_to(3 * LEFT + 2.5 * UP)
+        text_2 = TextMobject("BFS",font="heiti", color=RED, t2w={"weight": BOLD}).scale(2)
+        text_2.next_to(text_1, 2.5 * DOWN)
+        text_3 = TextMobject("队列    非递归实现",font="heiti", color=MAROON, t2w={"weight": BOLD})
+        text_3.move_to([-4, -1, 0])
+        self.play(Write(VGroup(text_1, text_2, text_3)))
+        #
+        left_p, right_p = -1, 4
+        bottom_p , top_p = -3, -2
+        line_1 = Line(start = [left_p, top_p, 0], end = [right_p, top_p, 0], color = YELLOW)
+        line_2 = Line(start = [left_p, bottom_p, 0], end = [right_p, bottom_p, 0], color = YELLOW)
+        stack_txt = MyText("队列").next_to(line_2, DOWN)
+        self.play(ShowCreation(VGroup(line_1, line_2)), ShowCreation(stack_txt))
+
+
+
 
 class DFS(Scene):
     def construct(self):
