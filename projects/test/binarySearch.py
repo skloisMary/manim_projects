@@ -1,6 +1,7 @@
 from tkinter import font
 
 from click import group
+from matplotlib.pyplot import text
 from nbformat import write
 from manimlib import *
 from manimlib.imports import *
@@ -31,7 +32,43 @@ class Array(VGroup):
     def value_at_index(self, index):
         return self[index].get_value()
 
-
+class BinarySearch_cover(Scene):
+    def construct(self):
+        # logo
+        logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold").scale(0.5)
+        height = logo_text.get_height() + 2 * 0.1
+        width = logo_text.get_width() + 2 * 0.15
+        logo_ellipse = Ellipse(
+            width=width,           
+            height=height, stroke_width=0.5
+        )
+        logo_ellipse.set_fill(color=PURPLE,opacity=0.3)
+        logo_ellipse.set_stroke(color=GRAY)
+        logo_text.move_to(logo_ellipse.get_center())
+        logo = VGroup(logo_ellipse, logo_text)
+        logo.shift(np.array((6.5, 3.5, 0.)))
+        self.play(Write(logo))
+        #
+        text_1 = TextMobject("二分查找", color=YELLOW).scale(2)
+        text_1.shift(2.5*UP)
+        self.play(Write(text_1))
+        color_dict_1 = {"[low, right]": RED, "while(low<=right)":ORANGE, "right=mid-1": GOLD}
+        text_2 = TextMobject("[low, right] \\\\ while(low<=right) \\\\ right=mid-1",  alignment="\\raggedright", tex_to_color_map=color_dict_1).scale(1.25)
+        text_2.shift(3*LEFT)
+        rec_1 = SurroundingRectangle(text_2, color=RED, buff=.1)
+        text_4 = TextMobject("闭区间", color=MAROON).next_to(rec_1, DOWN)
+        self.play(Write(text_2))
+        self.play(ShowCreation(rec_1))
+        self.play(Write(text_4))
+        #
+        color_dict_2 = {"[low, right)": GREEN, "while(low<right)": BLUE}
+        text_3 = TextMobject("[low, right) \\\\ while(low<right) \\\\ right=mid", alignment="\\raggedright", tex_to_color_map=color_dict_2).scale(1.25)
+        text_3.shift(3*RIGHT+2*DOWN)
+        rec_2 = SurroundingRectangle(text_3, color=TEAL, buff=.1)
+        text_5 = TextMobject("左开右闭", color=BLUE_A).next_to(rec_2, UP)
+        self.play(Write(text_3))
+        self.play(ShowCreation(rec_2))
+        self.play(Write(text_5))
 
 class BinarySearch(Scene):
     def construct(self):
@@ -97,7 +134,7 @@ class BinarySearch(Scene):
         text_steps2.next_to(text_steps1, DOWN)
         text_steps = VGroup(text_steps1, text_steps2)
         self.play(Write(text_steps), runtime=2)
-        self.wait(3)
+        self.wait(6)
         self.play(FadeOut(text_steps))
         #text_steps.scale(0.5)
         #text_steps.shift(DOWN + LEFT)
@@ -216,7 +253,8 @@ class BinarySearch(Scene):
         text_4_group = VGroup(text_4, text_4_1)
         text_4_group.next_to(rendered_code_1, DOWN)
         self.play(Write(text_4_group), runtime=2)
-        self.wait(3)
+        self.wait(6)
+        #
         text_5 = MyText("假如high的初始值预设为n,每次查找的区间为[low, high)（左闭右开区间），那么需要注意如下：")
         text_5.set_color_by_t2c(t2c={
             "n-1": YELLOW,
@@ -234,7 +272,7 @@ class BinarySearch(Scene):
         rendered_code_2 = Code(file_name="F:\manim\\projects\\test\\codes\\binarySearch_1.cpp", style=code_styles_list[14])
         rendered_code_2.next_to(text_5_group, DOWN)
         self.play(FadeIn(rendered_code_2), runtime=3)
-        self.wait(5)
+        self.wait(6)
         self.play(FadeOut(rendered_code_2))
         #
         text_6 = MyText("假如升序数组nums=[5,7,7,8,8,10],有一目标值target=8,那么如何找出8在数组nums中的开始位置和结束位置?")
@@ -252,7 +290,7 @@ class BinarySearch(Scene):
         alignment="\\raggedright",tex_to_color_map=color_dict).scale(0.5)
         text_7.next_to(text_6, DOWN)
         self.play(Write(text_7), runtime=2)
-
+        self.wait(2)
         arr_1 = list([5,7,7,8,8,10])
         arr_mob_1 = Array(arr_1)
         arr_mob_1.shift(0.5 * DOWN)
@@ -369,8 +407,8 @@ class BinarySearch(Scene):
         text_9 = MyText("rightIdx=" +str(rightIdx - 1)).scale(0.7)
         text_9.next_to(rightIdx_box , DOWN)
         self.play(ReplacementTransform(mid_box_tmp, rightIdx_box),ShowCreation(text_9), Uncreate(text))
-        self.wait(2)
+        self.wait(3)
         #
         rendered_code_3 = Code(file_name="F:\manim\\projects\\test\\codes\\binarySearch_2.cpp", style=code_styles_list[14]).scale(0.95)
         self.play(ReplacementTransform(VGroup(text_6, text_7, arr_mob_1, group_1, leftIdx_box, text_8, rightIdx_box, text_9), rendered_code_3))
-        self.wait(5)
+        self.wait(6)
