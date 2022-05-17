@@ -43,9 +43,53 @@ class Array(VGroup):
         scn.play(Swap(self.submobjects[i], self.submobjects[j]))
 
 
+class bubbleSort_cover(Scene):
+    def construct(self):
+        logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold").scale(0.5)
+        height = logo_text.get_height() + 2 * 0.1
+        width = logo_text.get_width() + 2 * 0.15
+        logo_ellipse = Ellipse(
+            width=width,           
+            height=height, stroke_width=0.5
+        )
+        logo_ellipse.set_fill(color=PURPLE,opacity=0.3)
+        logo_ellipse.set_stroke(color=GRAY)
+        logo_text.move_to(logo_ellipse.get_center())
+        logo = VGroup(logo_ellipse, logo_text)
+        logo.shift(np.array((6.5, 3.5, 0.)))
+        self.play(Write(logo))
+        #
+        text_1 = TextMobject("冒泡排序", color=YELLOW).scale(2)
+        text_1.shift(2 * UP)
+        self.play(Write(text_1))
+        #
+        start_position = [-5.5, -0.5, 0]
+        for i in range(8):
+            radius = 0.3 +  0.05 * (i+1)
+            circle = Circle(radius=radius, color=random_color(), stroke_width=4)
+            # circle.set_fill(color=random_color(), opacity=0.3)
+            circle.move_to(start_position)
+            index = Integer((i+1)).move_to(circle.get_center())
+            start_position[0] += 3 * radius
+            self.play(ShowCreation(VGroup(circle, index)))
+
+
 class bubbleSort(Scene):
     def construct(self):
         self.camera.background_color =  BLACK
+        logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold").scale(0.5)
+        height = logo_text.get_height() + 2 * 0.1
+        width = logo_text.get_width() + 2 * 0.15
+        logo_ellipse = Ellipse(
+            width=width,           
+            height=height, stroke_width=0.5
+        )
+        logo_ellipse.set_fill(color=PURPLE,opacity=0.3)
+        logo_ellipse.set_stroke(color=GRAY)
+        logo_text.move_to(logo_ellipse.get_center())
+        logo = VGroup(logo_ellipse, logo_text)
+        logo.shift(np.array((6.5, 3.5, 0.)))
+        self.play(Write(logo))
         # descriptions
         title = TextMobject("冒泡排序", fontsize=32).set_color(RED)
         title.to_edge(UP)
@@ -71,7 +115,7 @@ class bubbleSort(Scene):
         text_steps.scale(0.5)
         text_steps.next_to(text_3, DOWN * 2)
         self.play(Write(text_steps))
-        self.wait(2)
+        self.wait(3)
         text_steps.scale(0.5)
         text_steps.shift(2 * (DOWN + RIGHT))
         self.play(Write(text_steps))
@@ -123,13 +167,12 @@ class bubbleSort(Scene):
                         self.play(Uncreate(exchange_text)) 
             tmp = text
             arr_mob[len(arr) - 1 - i].set_color(RED)
-        self.wait()
         # 
         self.play(Uncreate(tmp), Uncreate(text_3), Uncreate(text_steps))
         self.play(Uncreate(VGroup(arr_mob,group)))
         # 新的一帧
         # 冒泡代码
-        rendered_code = Code(file_name="F:\manim\\projects\\test\\codes\\bubbleSort.py", tab_width=4, background="window", language="Python").scale(0.7)
+        rendered_code = Code(file_name="F:\manim\\projects\\test\\codes\\bubbleSort.py", style=code_styles_list[14], language="Python").scale(0.7)
         rendered_code.to_edge(LEFT)
         # 性能分析
         text_4 = TextMobject("以升序为例,假设待排序数组长度为n,冒泡排序需要两层for循环,\\\\",
@@ -142,6 +185,7 @@ class bubbleSort(Scene):
         text_4.next_to(rendered_code, RIGHT)
         self.play(ShowCreation(rendered_code))
         self.play(ShowCreation(text_4), runtime=2)
+        self.wait(5)
 
         
 class QuickSort(Scene):

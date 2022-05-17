@@ -53,7 +53,7 @@ class BinarySearch_cover(Scene):
         text_1.shift(2.5*UP)
         self.play(Write(text_1))
         color_dict_1 = {"[low, right]": RED, "while(low<=right)":ORANGE, "right=mid-1": GOLD}
-        text_2 = TextMobject("[low, right] \\\\ while(low<=right) \\\\ right=mid-1",  alignment="\\raggedright", tex_to_color_map=color_dict_1).scale(1.25)
+        text_2 = TextMobject("[low, right] \\\\ while(low<=right) \\\\ right=mid-1 \\\\ **",  alignment="\\raggedright", tex_to_color_map=color_dict_1).scale(1.25)
         text_2.shift(3*LEFT)
         rec_1 = SurroundingRectangle(text_2, color=RED, buff=.1)
         text_4 = TextMobject("闭区间", color=MAROON).next_to(rec_1, DOWN)
@@ -61,8 +61,8 @@ class BinarySearch_cover(Scene):
         self.play(ShowCreation(rec_1))
         self.play(Write(text_4))
         #
-        color_dict_2 = {"[low, right)": GREEN, "while(low<right)": BLUE}
-        text_3 = TextMobject("[low, right) \\\\ while(low<right) \\\\ right=mid", alignment="\\raggedright", tex_to_color_map=color_dict_2).scale(1.25)
+        color_dict_2 = {"[low, right)": GREEN, "while(low<right)": BLUE, "right=mid": PURPLE}
+        text_3 = TextMobject("[low, right) \\\\ while(low<right) \\\\ right=mid \\\\ **",alignment="\\raggedright", tex_to_color_map=color_dict_2).scale(1.25)
         text_3.shift(3*RIGHT+2*DOWN)
         rec_2 = SurroundingRectangle(text_3, color=TEAL, buff=.1)
         text_5 = TextMobject("左开右闭", color=BLUE_A).next_to(rec_2, UP)

@@ -143,6 +143,7 @@ class TexMobject(SingleStringTexMobject):
     def __init__(self, *tex_strings, **kwargs):
         digest_config(self, kwargs)
         tex_strings = self.break_up_tex_strings(tex_strings)
+        #print(tex_strings)
         self.tex_strings = tex_strings
         SingleStringTexMobject.__init__(
             self, self.arg_separator.join(tex_strings), **kwargs

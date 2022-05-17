@@ -17,7 +17,7 @@ class MyText(Text):
         'size': 0.5
     }
 
-def arrow_build(start, end, color, string_txt, direction):
+def arrow_build(start, end, color, string_txt, direction, ratio=1):
     arrow=Arrow(
             start=start, 
             end=end, 
@@ -28,7 +28,7 @@ def arrow_build(start, end, color, string_txt, direction):
             max_tip_length_to_length_ratio=0.35,
             max_stroke_width_to_length_ratio=5
         )
-    text = MyText(string_txt)
+    text = MyText(string_txt).scale(ratio)
     text.next_to(arrow, direction)
     return VGroup(arrow, text)
 
@@ -42,6 +42,61 @@ def create_element(strings, radius=0.3):
         element.add(circle, character)
         elements.add(element)
     return elements
+
+class Stack_cover(Scene):
+    def construct(self):
+        self.camera.background_color = BLACK
+        # logo
+        logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold")
+        height = logo_text.get_height() + 2 * 0.2
+        width = logo_text.get_width() + 2 * 0.3
+        logo_ellipse = Ellipse(
+            width=width,           
+            height=height, stroke_width=0.5
+        )
+        logo_ellipse.set_fill(color=PURPLE,opacity=0.3)
+        logo_ellipse.set_stroke(color=GRAY)
+        logo_text.move_to(logo_ellipse.get_center())
+        logo = VGroup(logo_ellipse, logo_text)
+        logo.shift(np.array((-5.5, 2.5, 0.)))  # left/right  up/dowm
+        self.play(Write(logo))
+        #
+        text_1 = TextMobject("栈", color=YELLOW).scale(3).shift(2* UP)
+        text_2 = TextMobject("先进后出", color=PURPLE).scale(2).move_to([-2,0,0])
+        text_3 = TextMobject("进栈", color=ORANGE).scale(1.75).move_to([-4.5,-2 ,0])
+        text_4 = TextMobject("出栈", color=GOLD).scale(1.75).move_to([-1, -3,0])
+        self.play(Write(VGroup(text_1, text_2, text_3, text_4)))
+        #####
+        line_top = 1
+        line_bottom = -3.5
+        line_left = 2.5
+        line_1 = Line(start = [line_left, line_bottom, 0], end = [line_left, line_top, 0], color = GREEN)
+        line_2 = Line(start = [line_left + 1.3, line_bottom, 0], end = [line_left + 1.3, line_top, 0], color = GREEN)
+        line_3 = Line(start = [line_left, line_bottom, 0], end = [line_left + 1.3, line_bottom, 0], color = GREEN)
+        stack_txt = MyText("栈").next_to(line_3, DOWN)
+        self.play(ShowCreation(VGroup(line_1, line_2, line_3)), ShowCreation(stack_txt))
+        # 箭头
+        bottom_arrow = arrow_build(start=RIGHT, end=LEFT, color=GREEN, string_txt="栈底", direction=RIGHT, ratio=2)
+        top_arrow = arrow_build(start=RIGHT, end=LEFT, color=RED, string_txt="栈顶", direction=RIGHT, ratio=2)
+        ###########
+        radius = 0.5
+        string_txt = "ABCD"
+        str_objects = create_element(string_txt, radius)
+        str_objects = VGroup()
+        for str in string_txt:
+            element = VGroup()
+            circle = Circle(radius=radius, stroke_color=BLUE)
+            character = TextMobject(str, color=RED).scale(1.25).move_to(circle.get_center())
+            element.add(circle, character)
+            str_objects.add(element)
+        #
+        start_positions = [3.1, -2.9, 0]
+        for i in range(0, 4):
+            self.play(ShowCreation(str_objects[i].move_to(start_positions)))
+            start_positions[1] += 1.1
+        bottom_arrow.next_to(str_objects[0], RIGHT)
+        top_arrow.next_to(str_objects[3], RIGHT)
+        self.play(ShowCreation(VGroup(bottom_arrow, top_arrow)))
 
 
 class Stack(Scene):
@@ -60,14 +115,12 @@ class Stack(Scene):
         logo_ellipse.set_stroke(color=GRAY)
         logo_text.move_to(logo_ellipse.get_center())
         logo = VGroup(logo_ellipse, logo_text)
-        logo.shift(np.array((6.5, 3.5, 0.)))
-        #
-        ori_title =TextMobject("栈", color=RED, fontsize=42)
-        self.play(Write(ori_title), Write(logo))
-        self.wait(1)
-        title = TextMobject("栈", fontsize=32).set_color(WHITE)
+        logo.shift(np.array((6.2, 3.2, 0.)))  # left/right  up/dowm
+        self.play(Write(logo))
+        ################################################################
+        title = TextMobject("栈", fontsize=48).set_color(RED)
         title.to_edge(UP)
-        self.play(ReplacementTransform(ori_title,title))
+        self.play(Write(title))
         # 栈的描述
         self.stack_description()
         # 演示
@@ -75,7 +128,8 @@ class Stack(Scene):
 
     def stack_description(self):
         # 栈的定义
-        color_dict_1 = {"线性表": MAROON, "后进先出": GOLD, "栈底":GREEN, "栈顶": GREEN}
+        color_dict_1 = {"栈(stack)": RED,"仅在表尾进行插入和删除操作的线性表": MAROON, 
+        "(LIFO, last-in, first-out)": GOLD, "栈底":BLUE, "栈顶": GREEN}
         stack_description = TextMobject("栈(stack)又名堆栈, 它是一种限定仅在表尾进行插入和删除操作的线性表。",
         "栈是允许在同一端进行插入和删除操作的特殊线性表,它按照后进先出(LIFO, last-in, first-out)的原则存储数据，",
         "先进入的数据被压入栈底，最后的数据在栈顶，需要读数据的时候从栈顶开始弹出数据。",
@@ -100,21 +154,22 @@ class Stack(Scene):
         brace_2_text.next_to(brace_2, DOWN)
         self.play(FadeIn(stack_operation_2, run_time=2))
         self.play(Write(VGroup(brace_2, brace_2_text)))
-        self.wait(2)
+        self.wait(5)
         self.play(Uncreate(VGroup(stack_description, stack_operation_1, stack_operation_2, brace_2, brace_2_text, brace_1, brace_1_text)))
         
     def stack_actions(self):
-        str_description = TextMobject("假设有字符串列表为:str = ['A', 'B', 'C', 'D', 'E'], 设栈为Stack, 下面动态演示str中的元素进栈和出栈操作",
-        alignment="\\raggedright").scale(0.55)
+        color_dict_1 = {"A": RED, "B": ORANGE, "C":YELLOW, "D": GOLD, "E": GREEN, "str": PURPLE}
+        str_description = TextMobject("假设有字符串列表为:str = ['A', 'B', 'C', 'D', 'E'],下面动态演示str中的元素进栈和出栈操作",
+        alignment="\\raggedright", tex_to_color_map=color_dict_1).scale(0.55)
         str_description.shift(2 * UP)
         self.play(Write(str_description))
         # 栈的线条
-        line_top = 1
+        line_top = 0
         line_bottom = -3
         line_left = 2
         line_1 = Line(start = [line_left, line_bottom, 0], end = [line_left, line_top, 0], color = GREEN)
-        line_2 = Line(start = [line_left + 1, line_bottom, 0], end = [line_left + 1, line_top, 0], color = GREEN)
-        line_3 = Line(start = [line_left, line_bottom, 0], end = [line_left + 1, line_bottom, 0], color = GREEN)
+        line_2 = Line(start = [line_left + 0.8, line_bottom, 0], end = [line_left + 0.8, line_top, 0], color = GREEN)
+        line_3 = Line(start = [line_left, line_bottom, 0], end = [line_left + 0.8, line_bottom, 0], color = GREEN)
         stack_txt = MyText("栈").next_to(line_3, DOWN)
         self.play(ShowCreation(VGroup(line_1, line_2, line_3)), ShowCreation(stack_txt))
         # 箭头
@@ -128,8 +183,8 @@ class Stack(Scene):
         # 进栈出栈位置定义
         S = []
         push_index = 0
-        current_positions = [line_left + 0.5, line_bottom + radius, 0] # 下一个进展元素到达的位置
-        ori_positions = [line_left + 0.5, line_top + 0.5, 0] # 进栈起始位置
+        current_positions = [line_left + 0.4, line_bottom + radius, 0] # 下一个进展元素到达的位置
+        ori_positions = [line_left + 0.4, line_top + 0.5, 0] # 进栈起始位置
         final_positions = [line_left * (-1) - 1, line_bottom, 0] # 出栈后元素的位置
         # 出栈序列label
         str_out_stack = TextMobject("出栈序列：").scale(0.5)
