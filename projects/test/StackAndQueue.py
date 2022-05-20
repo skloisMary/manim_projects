@@ -125,6 +125,7 @@ class Stack(Scene):
         self.stack_description()
         # 演示
         self.stack_actions()
+        self.wait(2)
 
     def stack_description(self):
         # 栈的定义
@@ -135,7 +136,7 @@ class Stack(Scene):
         "先进入的数据被压入栈底，最后的数据在栈顶，需要读数据的时候从栈顶开始弹出数据。",
         alignment="\\raggedright", tex_to_color_map=color_dict_1).scale(0.55)
         stack_description.shift(2 * UP)
-        self.play(Write(stack_description))
+        self.play(Write(stack_description), run_time=3)
         self.wait(2)
         #
         stack_operation_1 = BulletedList("栈顶：允许元素插入与删除的表尾称为栈顶","栈底：表头称为栈底",
@@ -154,7 +155,7 @@ class Stack(Scene):
         brace_2_text.next_to(brace_2, DOWN)
         self.play(FadeIn(stack_operation_2, run_time=2))
         self.play(Write(VGroup(brace_2, brace_2_text)))
-        self.wait(5)
+        self.wait(8)
         self.play(Uncreate(VGroup(stack_description, stack_operation_1, stack_operation_2, brace_2, brace_2_text, brace_1, brace_1_text)))
         
     def stack_actions(self):
@@ -290,6 +291,55 @@ class CircualGroup:
             element.add(character)
         return element
 
+class Queue_cover(Scene):
+    def construct(self):
+        self.camera.background_color = BLACK
+        # logo
+        logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold")
+        height = logo_text.get_height() + 2 * 0.2
+        width = logo_text.get_width() + 2 * 0.3
+        logo_ellipse = Ellipse(
+            width=width,           
+            height=height, stroke_width=0.5
+        )
+        logo_ellipse.set_fill(color=PURPLE,opacity=0.3)
+        logo_ellipse.set_stroke(color=GRAY)
+        logo_text.move_to(logo_ellipse.get_center())
+        logo = VGroup(logo_ellipse, logo_text)
+        logo.shift(np.array((5.5, 3, 0.)))  # left/right  up/dowm
+        self.play(Write(logo))
+        #########
+        text_1 = TextMobject("队列", color=YELLOW).scale(2).shift(2.5 * UP)
+        text_2 = TextMobject("双端队列", color=RED).scale(1.5).move_to([-4.5, 1, 0])
+        text_3 = TextMobject("循环队列", color=GOLD).scale(1.5).move_to([-4.5, -2, 0])
+        text_4 = TextMobject("优先队列", color=ORANGE).scale(1.5).move_to([4.5, 1, 0])
+        text_5 = TextMobject("单调队列", color=BLUE).scale(1.5).move_to([4.5, -2, 0])
+        self.play(Write(VGroup(text_1, text_2, text_3, text_4, text_5)))
+        #
+        line_left = -2.5
+        line_bottom = -1
+        line_1 = Line(start = [line_left, line_bottom, 0], end = [line_left * (-1), line_bottom, 0], color = GREEN)
+        line_2 = Line(start = [line_left, line_bottom + 1, 0], end = [line_left * (-1), line_bottom + 1, 0], color = GREEN)
+        lines_group= VGroup(line_1, line_2)
+        #
+        string_txt = "ABCDE"
+        radius = 0.4
+        str_objects = create_element(string_txt, radius)
+        position = [line_left+radius, line_bottom + 0.5, 0]
+        object_group = VGroup()
+        for i in range(5):
+            item = str_objects[i]
+            item.move_to(position)
+            position[0] += 2.5 * radius
+            object_group.add(item)
+        #
+        bottom_arrow = arrow_build(start=DOWN, end=UP, color=RED, string_txt="对头", direction=DOWN)
+        bottom_arrow.next_to(object_group[0], DOWN)
+        top_arrow = arrow_build(start=DOWN, end=UP, color=RED, string_txt="队尾", direction=DOWN)
+        top_arrow.next_to(object_group[-1], DOWN)
+        arrow_group = VGroup(bottom_arrow, top_arrow)
+        self.play(ShowCreation(VGroup(lines_group, object_group, arrow_group)))
+
 
 class Queue(Scene):
     def construct(self):
@@ -306,20 +356,18 @@ class Queue(Scene):
         logo_ellipse.set_stroke(color=GRAY)
         logo_text.move_to(logo_ellipse.get_center())
         logo = VGroup(logo_ellipse, logo_text)
-        logo.shift(np.array((6.5, 3.5, 0.)))
-        #
-        ori_title =TextMobject("队列", color=RED, fontsize=42)
-        self.play(Write(ori_title), Write(logo))
-        self.wait(1)
-        title = TextMobject("队列", fontsize=32).set_color(WHITE)
-        title.to_edge(UP)
-        self.play(ReplacementTransform(ori_title,title))
+        logo.shift(np.array((6.2, 3.2, 0.)))  # left/right  up/dowm
+        self.play(Write(logo))
         #
         self.queue_description()
+        self.wait(2)
 
     # 队列的描述
     def queue_description(self):
         # 队列
+        ori_title = TextMobject("队列", color=RED, fontsize=32).to_edge(UP)
+        self.play(Write(ori_title))
+        #
         color_dict={"队列":RED, "先进先出":ORANGE, "队尾":GREEN,"队头": BLUE}
         queue_description = TextMobject("队列(queue)是一种先进先出(first in first out, FIFO)的线性表,它只允许在表的一端进行插入",
         "而在另一端删除元素,最早进入队列的元素最早离开。在队列中，允许插入的一端叫做队尾(rear)，允许删除的一端则成为队头(front)", 
@@ -327,7 +375,7 @@ class Queue(Scene):
         queue_description.move_to(2 * UP)
         self.play(Write(queue_description), run_time=2)
         self.queue_illustrator()
-        self.wait(2)
+        self.wait(3)
         queue_text = TextMobject("C++ STL中队列声明的基本格式是:queue<结构类型> 队列名", alignment="\\raggedright").scale(0.5)
         queue_text.next_to(queue_description, DOWN)
         self.play(Write(queue_text))
@@ -337,17 +385,21 @@ class Queue(Scene):
         "back:返回队列的最后一个元素", dot_color=BLUE).scale(0.5)
         queue_fun_bull_list.next_to(queue_text, DOWN)
         self.play(Write(queue_fun_bull_list), run_time=2)
-        self.wait(2)
+        self.wait(5)
         self.play(Uncreate(VGroup(queue_text, queue_fun_bull_list)))
         # 双端队列
+        title = TextMobject("双端队列", color=RED, fontsize=32).to_edge(UP)
+        self.play(ReplacementTransform(ori_title,title))
+        ori_title = title
+        #
         deque_color_dict = {"双端队列":RED, "限定插入和删除操作在表的两端进行的线性表": GOLD}
-        deque_description = TextMobject("双端队列(deque)是限定插入和删除操作在表的两端进行的线性表。这两端分别称作端点1和端点2",
+        deque_description = TextMobject("双端队列(deque)是限定插入和删除操作在表的两端进行的线性表。这两端分别称作端点1和端点2。",
         "在实际应用中,有输出受限的双端队列(即一个端点允许插入和删除，一个端点只允许插入的双端队列)和",
         "输入受限的双端队列(即一个端点允许插入和删除，一个端点只允许删除的双端队列)。", tex_to_color_map=deque_color_dict,
         alignment="\\raggedright", font="heiti").scale(0.5).shift(2 * UP)
         self.play(ReplacementTransform(queue_description, deque_description))
         self.queue_illustrator(is_dequeued=True)
-        self.wait(2)
+        self.wait(3)
         deque_text = TextMobject("C++ STL中队列声明的基本格式是:deque<结构类型> 队列名", alignment="\\raggedright").scale(0.5)
         deque_text.next_to(deque_description, DOWN)
         self.play(Write(deque_text))
@@ -357,24 +409,30 @@ class Queue(Scene):
         "insert:插入一个元素", "erase:删除一个元素",dot_color=BLUE).scale(0.5)
         deque_fun_bull_list.next_to(deque_text, DOWN)
         self.play(Write(deque_fun_bull_list), run_time=2)
-        self.wait(2)
+        self.wait(5)
         self.play(Uncreate(VGroup(deque_text, deque_fun_bull_list)))
         # 循环队列
+        title = TextMobject("循环队列", color=RED, fontsize=32).to_edge(UP)
+        self.play(ReplacementTransform(ori_title,title))
+        ori_title = title
+        #
         circular_color_dict = {"循环队列": RED, "逻辑上的环状空间": GREEN, "队列大小是固定的":GOLD}
         circular_queue=TextMobject("循环队列(circular queue)将队列存储空间的最后一个位置与第一个位置首尾相连，形成逻辑上的环状空间，供队列循环使用。",
         "在循环队列结构中，当存储空间的最后一个位置已被使用，而有新的元素要入队列时，",
         "只需要将存储空间的第一个位置空闲，将新元素加入到第一元素的位置即可。","循环队列的队列大小是固定的，可以防止伪溢出的发生。" ,
         tex_to_color_map=circular_color_dict, alignment="\\raggedright", font="heiti").scale(0.5).shift(2 * UP)
         self.play(ReplacementTransform(deque_description, circular_queue))
-        self.wait(2)
+        self.wait(3)
         self.circularQueue()
         # 优先队列
+        title = TextMobject("优先队列", color=RED, fontsize=32).to_edge(UP)
         priority_color_dict = {"优先队列":RED, "优先级": PURPLE, "最高级先出": ORANGE, "堆排序": GOLD}
         priority_queue = TextMobject("优先队列(priority queue)中,元素被赋予优先级, 优先级最高的先出队列。", 
         "优先队列具有最高级先出(first in, larger in)的行为特性。","通常采用堆排序实现。",
         tex_to_color_map=priority_color_dict, alignment="\\raggedright", font="heiti").scale(0.5).shift(2 * UP)
-        self.wait(2)
-        self.play(ReplacementTransform(circular_queue, priority_queue))
+        self.play(ReplacementTransform(ori_title,title), ReplacementTransform(circular_queue, priority_queue))
+        ori_title = title
+        self.wait(3)
         #
         priority_text = TextMobject("C++ STL中优先队列声明的基本格式是:priority\_queue<结构类型> 队列名", alignment="\\raggedright").scale(0.5)
         priority_text.next_to(priority_queue, DOWN)
@@ -389,22 +447,27 @@ class Queue(Scene):
         "pop: 删除优先队列的第一个元素","top:返回优先队列的第一个元素",dot_color=BLUE).scale(0.5)
         priotiry_fun_bull_list.next_to(priority_bull_list, DOWN)
         self.play(Write(priotiry_fun_bull_list), run_time=2)
-        self.wait(2)
-        self.play(Uncreate(VGroup(priority_text, priority_bull_list, priotiry_fun_bull_list)))
+        self.wait(3)
+        self.play(Uncreate(VGroup(priority_queue, priority_text, priority_bull_list, priotiry_fun_bull_list)))
         # 单调队列
-        monotone_color_dict = {"单调队列":RED, "某个范围内的最小值或者最大值": ORANGE, "N=8": ORANGE, "k=3": BLUE}
+        title = TextMobject("单调队列", color=RED, fontsize=32).to_edge(UP)
+        self.play(ReplacementTransform(ori_title,title))
+        ori_title = title
+        #
+        monotone_color_dict = {"单调队列":RED, "某个范围内的最小值或者最大值": ORANGE, 
+        "nums=[1,3,-1,-3,5,3,6,7]": GOLD, "N=8": ORANGE, "k=3": BLUE}
         monotone_queue = TextMobject("单调队列(monotone queue)是有某种单调性的队列,它分为两种,一种是单调递增,另一种是单调递减的。",
-        "单调队列通常用来得到某个范围内的最小值或者最大值", tex_to_color_map=monotone_color_dict,
+        "单调队列通常用来得到某个范围内的最小值或者最大值。", tex_to_color_map=monotone_color_dict,
         alignment="\\raggedright", font="heiti").scale(0.5).shift(2 * UP)
         self.play(ReplacementTransform(priority_queue, monotone_queue))
-        self.wait(2)
+        self.wait(3)
         monotone_queue_text = TextMobject("有一整数数组nums=[1,3,-1,-3,5,3,6,7],有N=8个元素,",
-        "有一个大小为k=3的滑动窗口从数组的最左侧移动到数组的最右侧",
-        "每次只能看到滑动窗口中的k个数字,滑动窗口每次只向右移动一位。",tex_to_color_map=monotone_color_dict,
+        "有一个大小为k=3的滑动窗口从数组的最左侧移动到数组的最右侧,",
+        "每次只能看到滑动窗口中的k个数字,滑动窗口每次只向右移动一位。如何得到窗口中的最大值？",tex_to_color_map=monotone_color_dict,
         alignment="\\raggedright", font="heiti").scale(0.5)
         monotone_queue_text.shift(2 * UP)
         self.play(ReplacementTransform(monotone_queue, monotone_queue_text))
-        self.wait(2)
+        self.wait(3)
         self.mon_queue_action()         
   
 
@@ -478,15 +541,15 @@ class Queue(Scene):
         # 队列的一般情况
         for i in range(len(string_text)):
             self.play(Write(circual.Characters[i]), Rotating(rear_arrow, radians=TAU/6 , run_time=1, about_point=position))
-            self.wait(1)
+            self.wait(2)
         text = TextMobject(texts[0], texts[1], texts[2], alignment="\\raggedright", font="heiti").scale(0.5)
         text.move_to([2.5, 0, 0])
         self.play(Write(text))
-        self.wait(2)
-        bul_list = BulletedList(texts[3], texts[4], texts[5]).scale(0.5)
-        bul_list.move_to([2.5, -1, 0])
+        self.wait(3)
+        bul_list = BulletedList(texts[3], texts[4], texts[5], cdot=BLUE).scale(0.5)
+        bul_list.move_to([2.5, -0.5, 0])
         self.play(ReplacementTransform(text, bul_list))
-        self.wait(2)
+        self.wait(3)
         self.play(Uncreate(VGroup(circual.Annular_Sectors, circual.Characters, front_arrow, rear_arrow, circual_text, text, bul_list)))
 
     def mon_queue_action(self):
@@ -565,7 +628,7 @@ class Queue(Scene):
         res.append(nums[Q[0]])
         #
         text = MyText("取对首元素为:第1个滑动窗口的最大值")
-        text.move_to([right_p + 2, top_p , 0])
+        text.move_to([right_p + 2.5, top_p , 0])
         self.play(ReplacementTransform(actions_text, text))
         actions_text = text
         #
