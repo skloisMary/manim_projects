@@ -64,6 +64,33 @@ class Arrays:
             array_groups.add(items)
         return array_groups
 
+class  Heap_Sort_cover(Scene):
+    def construct(self):
+       # logo
+        logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold")
+        height = logo_text.get_height() + 2 * 0.2
+        width = logo_text.get_width() + 2 * 0.3
+        logo_ellipse = Ellipse(
+            width=width,           
+            height=height, stroke_width=0.5
+        )
+        logo_ellipse.set_fill(color=PURPLE,opacity=0.3)
+        logo_ellipse.set_stroke(color=GRAY)
+        logo_text.move_to(logo_ellipse.get_center())
+        logo = VGroup(logo_ellipse, logo_text)
+        logo.shift(np.array((5.5, 2.5, 0.)))  # left/right  up/dowm
+        self.play(Write(logo))
+        #
+        text_1 = TextMobject("堆",color=YELLOW).scale(3).move_to([0,1.5,0])
+        text_2 = TextMobject("排", color=YELLOW).scale(3).move_to([2,-1,0])
+        text_3 = TextMobject("What", color=RED).scale(2).move_to([-4.5,1.5,0])
+        text_5 = TextMobject("is", color=WHITE).scale(1).move_to([-2,1.5,0])
+        text_4 = TextMobject("How", color=BLUE).scale(2).move_to([-2,-1,0])
+        text_6 = TextMobject("to", color=WHITE).scale(1).move_to([0,-1,0])
+        text_group = VGroup(text_1, text_2, text_3, text_4, text_5, text_6)
+        self.play(Write(text_group))
+
+
 class HeapSort(Scene):
     def construct(self):
         ################################################################
@@ -84,7 +111,7 @@ class HeapSort(Scene):
         ori_title =TextMobject("堆排序", color=RED, fontsize=42)
         self.play(Write(ori_title), Write(logo))
         self.wait(1)
-        title = TextMobject("堆排序", fontsize=32).set_color(WHITE)
+        title = TextMobject("堆排序", fontsize=32).set_color(RED)
         title.to_edge(UP)
         self.play(ReplacementTransform(ori_title,title))
         ################################################################
@@ -112,7 +139,7 @@ class HeapSort(Scene):
         step_one_description = TextMobject(steps_description[0], alignment="\\raggedright", tex_to_color_map=color_dict).scale(0.5)
         step_one_description.move_to([0,-1.5,0])
         self.play(Write(step_one_description))
-        self.wait(2)
+        self.wait(4)
         ########
         descriptions = ["从下标为2的元素38开始调整堆,记录tmp=38,指针为index=2。从下标为5的左子点9开始,左子点9小于右子点27,右子节点为节点中的最大值。下标加1,此次调整完成。",
         "从下标为1的元素96开始调整堆,记录tmp=96,指针为index=1。从下标为3的左子点7开始,左子点7小于右子点11,右子节点为节点中的最大值。下标加1,此次调整完成。",
@@ -128,14 +155,13 @@ class HeapSort(Scene):
         descriptions_color_dict = {
             "tmp=": MAROON, "index=1": ORANGE, "index=0": ORANGE, "index=2": ORANGE,
             "27": TEAL,"38": GREEN,"96": YELLOW,
-            "11": GOLD,"83": RED,"7": BLUE,
-            "9": GREY, "0": PURPLE, "指针": GRAY}
+            "11": GOLD,"83": RED, "0": PURPLE, "指针": GRAY}
         ###构造大顶堆，从非叶子结点开始倒序遍历
         for i in range(length//2-1, -1, -1):
             text = TextMobject(descriptions[descriptions_index], alignment="\\raggedright", tex_to_color_map=descriptions_color_dict).scale(0.5)
             text.next_to(step_one_description, DOWN, aligned_edge=LEFT)
             self.play(Write(text), run_time=1)
-            self.wait(1)
+            self.wait(3)
             self.adjust_heap(data, trees, array_groups, i, length)
             descriptions_index += 1
             self.play(Uncreate(text))
@@ -143,7 +169,7 @@ class HeapSort(Scene):
         step_two_description = TextMobject(steps_description[1], alignment="\\raggedright", tex_to_color_map=color_dict).scale(0.5)
         step_two_description.move_to([0,-1.5,0])
         self.play(ReplacementTransform(step_one_description, step_two_description))
-        self.wait(1)
+        self.wait(2)
         # print(data)
         # for t in range(length):
         #     print(array_groups.submobjects[t][1].get_value(), trees.elements[t][1].get_value())
@@ -174,7 +200,7 @@ class HeapSort(Scene):
             text = TextMobject(descriptions[descriptions_index],alignment="\\raggedright", tex_to_color_map=descriptions_color_dict).scale(0.5)
             descriptions_index +=1
             text.next_to(step_swap_description, DOWN, aligned_edge=LEFT)
-            self.play(Write(text))
+            self.play(Write(text), run_time=1)
             # for t in range(length):
             #     print(array_groups.submobjects[t][1].get_value(), trees.elements[t][1].get_value())
             # 重新对堆进行调整
@@ -191,6 +217,7 @@ class HeapSort(Scene):
         self.play(Uncreate(VGroup(trees.elements, trees.line_groups, array_groups, step_two_description)))
         ########################################################################
         self.code_complexity()
+        self.wait(2)
 
         
     # 构建堆
@@ -268,7 +295,7 @@ class HeapSort(Scene):
         "小顶堆：每个节点的值都小于其子节点的值。", dot_color=BLUE).scale(0.5)
         heap_bull_list.next_to(heap_desc_func, 2 * DOWN, aligned_edge=LEFT)
         self.play(Write(heap_bull_list), run_time=2)
-        self.wait(2)
+        self.wait(3)
         self.play(Write(heap_bull_list.scale(0.5).next_to(heap_desc_func, DOWN, aligned_edge=RIGHT)))
         #
         data = [96,83,27,38,11,9,7]
@@ -280,7 +307,7 @@ class HeapSort(Scene):
         [left_right + 1, top_bottom-2, 0], [left_right + 3, top_bottom-2, 0]]
         trees = Graph(data=data, graph_datas=graph_datas, positions=positions, radius= 0.4)
         heap_illustrator_text = TextMobject("堆的逻辑表示").scale(0.5)
-        heap_illustrator_text.move_to([-2,-3.5,0])
+        heap_illustrator_text.move_to([-3,-3.5,0])
         #
         array_groups = Arrays(data=data, positions=[2, -1, 0]).get_arrays()
         array_illustrator_text = TextMobject("数组储存结构").scale(0.5)
