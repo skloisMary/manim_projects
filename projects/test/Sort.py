@@ -1,7 +1,9 @@
 from cgitb import text
+from heapq import merge
+from multiprocessing.util import ForkAwareThreadLock
 from operator import le, rshift
 from tracemalloc import start
-from turtle import circle, right
+from turtle import circle, color, pos, right, width
 from manim import *
 from manimlib.imports import *
 import random
@@ -728,7 +730,8 @@ class Selection(Scene):
             if i == length - 1:
                 self.wait(2)
                 self.play(Uncreate(sorted), Uncreate(unsorted))
-        self.play(Uncreate(VGroup(arr_mob, S_Groups, index_group)))
+        self.wait(4)
+        #self.play(Uncreate(VGroup(arr_mob, S_Groups, index_group)))
                  
 
     def  get_arrows(self, start_position, end_position, text, color=RED):
@@ -745,30 +748,262 @@ class Selection(Scene):
         txt = TextMobject(text,color=color).scale(0.45).next_to(arrow, DOWN)
         return VGroup(arrow, txt)
 
-# python -m manim F:\manim\\projects\\test\\Sort.py Selection -p --media_dir F:\\manim_vedio_dirs
+# python -m manim F:\manim\\projects\\test\\Sort.py Merge -p --media_dir F:\\manim_vedio_dirs
 class Merge(Scene):
     def construct(self):
         self.description()
-        self.camera.background_color =  WHITE
-        self.sort_array()
+        self.statis_merge()
     
     def description(self):
+        logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold").scale(0.5)
+        height = logo_text.get_height() + 2 * 0.1
+        width = logo_text.get_width() + 2 * 0.15
+        logo_ellipse = Ellipse(
+            width=width,           
+            height=height, stroke_width=0.5
+        )
+        logo_ellipse.set_fill(color=PURPLE,opacity=0.3)
+        logo_ellipse.set_stroke(color=GRAY)
+        logo_text.move_to(logo_ellipse.get_center())
+        logo = VGroup(logo_ellipse, logo_text)
+        logo.shift(np.array((6.5, 3.5, 0.)))
+        self.play(Write(logo))
+        #############
         title = TextMobject("归并排序", fontsize=32).set_color(RED)
         title.to_edge(UP)
         self.play(Write(title))
+        #
+        merge_description = TextMobject("归并排序(Merge Sort)算法是在分治算法的基础上设计出来的一种排序算法, ", 
+        "它将整个待排序序列划分成多个不可再分的子序列,每个子序列中仅有1个元素;然后对所有的子序列进行两两合并，在合并的过程中完成排序操作",
+        "最后得到有序序列.",alignment="\\raggedright").scale(0.5).shift(1.5 * UP)
+        self.play(ShowCreation(merge_description), runtime=2)
+        self.wait(3)
+        self.play(Uncreate(merge_description))
+        self.play(ShowCreation(title.shift(5 * LEFT)))
 
-    def sort_array(self):
+
+    def get_arrays(self, arr, color, position):
+        arr_txt = ""
+        for i in range(len(arr)):
+            if i == len(arr) - 1:
+                arr_txt += str(arr[i])
+            else:
+                arr_txt += str(arr[i]) + "  "
+        return TextMobject(arr_txt, color=color).move_to(position)
+
+    def statis_merge(self):
+        #
         arr = list([4, 1, 9, 3, 2, 7, 10, 6, 8, 5])
-        arr_mob = Array(arr)
-        arr_mob.set_width(10)
-        # 显示创建过程
-        self.play(ShowCreation(arr_mob))
+        length = len(arr)
+        arr_Mobject_1 = self.get_arrays(arr, color=WHITE, position=[0,2.5,0])
+        rec_1 = SurroundingRectangle(arr_Mobject_1, color=RED)
+        self.play(ShowCreation(VGroup(arr_Mobject_1, rec_1)))
+        # arrow
+        arrow_total = Arrow(start=[-0.25, 2.0, 0], end=[-0.25, -4, 0], color=YELLOW, stroke_width=4, tip_length = 0.2, tip_angle= PI / 3)
+        division_txt= TextMobject("分割", color=RED).scale(0.9).move_to([-0.25, 0.5, 0])
+        division = VGroup(arrow_total, division_txt)
+        self.play(Write(division))
+        # one 
+        rec_groups_2 = VGroup()
+        arrow_reverse_2 = VGroup()
+        position_2 = [-3,1,0]
+        for i in range(0, length, 5):
+            mob = self.get_arrays(arr[i:i+5], color=WHITE, position=position_2)
+            rec = SurroundingRectangle(mob, color=ORANGE)
+            arrow = Arrow(start=rec_1.get_center(), end=rec.get_center(), stroke_width=2, tip_length=0.1, tip_angle=PI/3, buff=0.7)
+            arrow_reverse = Arrow(start=rec.get_center(), end=rec_1.get_center(), color=YELLOW, stroke_width=2, tip_length=0.1, tip_angle=PI/3, buff=0.7)
+            rec_groups_2.add(VGroup(mob, rec, arrow))
+            arrow_reverse_2.add(arrow_reverse)
+            position_2[0] *= (-1)
+        self.play(ShowCreation(rec_groups_2))
+        # two
+        rec_groups_3 = VGroup()
+        arrow_reverse_3 = VGroup()
+        position_3 = [-4.5,-0.5,0]
+        position_x_3 = [-4.5, -1.5, 1.5, 4.5]
+        i, index, cnt  = 0, 0, 0
+        while i < length:
+            position_3[0] = position_x_3[cnt]
+            if i == 0 or i == 5:
+                mob = self.get_arrays(arr[i:i+3], color=WHITE, position=position_3)
+                i += 3
+            else:
+                mob = self.get_arrays(arr[i:i+2], color=WHITE, position=position_3)
+                i += 2
+            rec = SurroundingRectangle(mob, color=GOLD)
+            arrow = Arrow(start=rec_groups_2[index][1].get_center(), end=rec.get_center(), stroke_width=2, tip_length=0.1, tip_angle=PI/3, buff=0.5)
+            arrow_reverse = Arrow(start=rec.get_center(), end=rec_groups_2[index][1].get_center(), color=YELLOW, stroke_width=2, tip_length=0.1, tip_angle=PI/3, buff=0.5)
+            rec_groups_3.add(VGroup(mob, rec, arrow))
+            arrow_reverse_3.add(arrow_reverse)
+            # print(cnt, i, index)
+            if i == 5:
+                index += 1
+            cnt += 1
+        self.play(ShowCreation(rec_groups_3))
+        # three 
+        rec_groups_4 = VGroup()
+        arrow_reverse_4 = VGroup()
+        position_4 = [-5,-2,0]
+        position_x_4 = [-5.5, -3.5, -2, -1, 1, 2.5, 4, 5]
+        i, index = 0, 0
+        while i < length:
+            position_4[0] = position_x_4[index]
+            if i == 0 or i == 5:
+                mob = self.get_arrays(arr[i:i+2], color=WHITE, position=position_4)
+                i += 1
+            else:
+                mob = self.get_arrays(arr[i:i+1], color=WHITE, position=position_4)
+            rec = SurroundingRectangle(mob, color=GREEN)
+            # print(math.floor(index/2))
+            arrow = Arrow(start=rec_groups_3[math.floor(index/2)][1].get_center(), end=rec.get_center(), stroke_width=2, tip_length=0.1, tip_angle=PI/3, buff=0.35)
+            arrow_reverse = Arrow(start=rec.get_center(), end=rec_groups_3[math.floor(index/2)][1].get_center(), color=YELLOW, stroke_width=2, tip_length=0.1, tip_angle=PI/3, buff=0.35)
+            rec_groups_4.add(VGroup(mob, rec, arrow))
+            arrow_reverse_4.add(arrow_reverse)
+            i += 1
+            index += 1
+        self.play(ShowCreation(rec_groups_4))
+        # four
+        rec_groups_5 = VGroup()
+        arrow_reverse_5 = VGroup()
+        position_5 = [-6,-3.5,0]
+        position_x_5 = [-6, -5,  -3.5, -2, -1, 0.5, 1.5, 2.5, 4, 5]
+        index = 0
+        for i in range(length):
+            position_5[0] = position_x_5[i]
+            mob = self.get_arrays(arr[i:i+1], color=WHITE, position=position_5)
+            rec = SurroundingRectangle(mob, color=PURPLE)
+            arrow = Arrow(start=rec_groups_4[index][1].get_center(), end=rec.get_center(), stroke_width=2, tip_length=0.1, tip_angle=PI/3, buff=0.35)
+            arrow_reverse = Arrow(start=rec.get_center(), end=rec_groups_4[index][1].get_center(), color=YELLOW, stroke_width=2, tip_length=0.1, tip_angle=PI/3, buff=0.35)
+            rec_groups_5.add(VGroup(mob, rec, arrow))
+            arrow_reverse_5.add(arrow_reverse)
+            if not (i == 0 or i == 5):
+                index += 1
+        self.play(ShowCreation(rec_groups_5))
+        #
+        self.wait(5)
+        # 合并
+        arrow_total_reverse = Arrow(start=[-0.25, -4, 0], end=[-0.25, 2.0, 0], color=MAROON, stroke_width=4, tip_length = 0.2, tip_angle= PI / 3)
+        merge_txt= TextMobject("合并", color=RED).scale(0.9).move_to([-0.25, 0.5, 0])
+        merge = VGroup(arrow_total_reverse, merge_txt)
+        self.play(ReplacementTransform(division, merge))
+        # first
+        i, index = 0, 0
+        while i < length:
+            if i == 0 or i == 5:
+                self.play(ReplacementTransform(rec_groups_5[i][2], arrow_reverse_5[i]))
+                if arr[i] > arr[i+1]:
+                    tmp = arr[i+1]
+                    arr[i+1] = arr[i]
+                    arr[i] = tmp
+                    # new_mob
+                    position_4[0] = position_x_4[index]
+                    mob = self.get_arrays(arr[i:i+2], color=TEAL, position=position_4)
+                    self.play(ReplacementTransform(rec_groups_4[index][0], mob))
+                i += 1
+            self.play(ReplacementTransform(rec_groups_5[i][2], arrow_reverse_5[i]))
+            i += 1
+            index += 1
+        print('arr=', arr)
+        # 2nd
+        arr = list([1, 4, 9, 2, 3, 6, 7, 10, 5, 8])
+        i, cnt, index  = 0, 0, 0
+        while i < length:
+            position_3[0] = position_x_3[cnt]
+            if i == 0 or i == 5:
+                # 排序省略
+                mob = self.get_arrays(arr[i:i+3], color=TEAL, position=position_3)
+                #
+                for j in range(2, 0, -1):
+                    self.play(ReplacementTransform(rec_groups_4[index][2], arrow_reverse_4[index]))
+                    index += 1
+                #
+                i += 3
+            else:
+                mob = self.get_arrays(arr[i:i+2], color=TEAL, position=position_3)
+                for j in range(2, 0, -1):
+                    self.play(ReplacementTransform(rec_groups_4[index][2], arrow_reverse_4[index]))
+                    index += 1
+                i += 2
+            self.play(ReplacementTransform(rec_groups_3[cnt][0], mob))
+            cnt += 1
+        # 3rd
+        arr = list([1, 2, 3, 4, 9, 5, 6, 7, 8, 10])
+        i, index, cnt  = 0, 0, 0
+        for i in range(0, length, 5):
+            mob = self.get_arrays(arr[i:i+5], color=TEAL, position=position_2)
+            for j in range(2, 0, -1):
+                self.play(ReplacementTransform(rec_groups_3[index][2], arrow_reverse_3[index]))
+                index += 1
+            self.play(ReplacementTransform(rec_groups_2[cnt][0], mob))
+            cnt += 1
+            position_2[0] *= (-1)
+        # final
+        arr = list([1, 2, 3, 4,  5, 6, 7, 8, 9, 10])
+        for index in range(2):
+            self.play(ReplacementTransform(rec_groups_2[index][2], arrow_reverse_2[index]))
+        mob = self.get_arrays(arr, color=TEAL, position=[0,2.5,0])
+        self.play(ReplacementTransform(arr_Mobject_1, mob))
         self.wait(2)
 
-        # index
-        group = VGroup()
-        for i in range(0, len(arr)):
-            index = Integer(i).set_color(WHITE).scale(0.3)
-            index.next_to(arr_mob[i], 0.5 * UP)
-            group.add(index)
-        self.play(ShowCreation(group))
+
+# python -m manim F:\manim\\projects\\test\\Sort.py Summary -p --media_dir F:\\manim_vedio_dirs
+class Summary(Scene):
+    def construct(self):
+        logo_text = TextMobject("陶将",  font="lishu", color=RED, weight="bold").scale(0.5)
+        height = logo_text.get_height() + 2 * 0.1
+        width = logo_text.get_width() + 2 * 0.15
+        logo_ellipse = Ellipse(
+            width=width,           
+            height=height, stroke_width=0.5
+        )
+        logo_ellipse.set_fill(color=PURPLE,opacity=0.3)
+        logo_ellipse.set_stroke(color=GRAY)
+        logo_text.move_to(logo_ellipse.get_center())
+        logo = VGroup(logo_ellipse, logo_text)
+        logo.shift(np.array((6.5, 3.5, 0.)))
+        self.play(Write(logo))
+        #############
+        title = TextMobject("选择、插入、希尔、归并和快排排序算法复杂度对比").scale(0.5).to_edge(UP)
+        self.play(Write(title))
+        first_column = TextMobject("排序算法\\\\", "\\quad\\\\选择排序\\\\", "\\quad\\\\插入排序\\\\", "\\quad\\\\希尔排序\\\\", "\\quad\\\\归并排序\\\\", "\\quad\\\\快速排序", alignment="\\raggedright", weight=BOLD).scale(0.8)
+        second_column = TextMobject("平均时间复杂度\\\\", "\\quad\\\\$O(n^{2})$\\\\", "\\quad\\\\$O(n^{2})$\\\\", "\\quad\\\\$O(nlogn)$\\\\", "\\quad\\\\$O(nlogn)$\\\\", "\\quad\\\\$O(nlogn)$").scale(0.8)
+        third_column = TextMobject("最好情况\\\\",  "\\quad\\\\$O(n^{2})$\\\\", "\\quad\\\\$O(n)$\\\\", "\\quad\\\\$O(nlog^{2}n)$\\\\", "\\quad\\\\$O(nlogn)$\\\\", "\\quad\\\\$O(nlogn)$").scale(0.8)
+        fourth_column = TextMobject("最坏情况\\\\","\\quad\\\\$O(n^{2})$\\\\", "\\quad\\\\$O(n^{2})$\\\\", "\\quad\\\\$O(nlog^{2}n)$\\\\", "\\quad\\\\$O(nlogn)$\\\\", "\\quad\\\\$O(n^{2})$").scale(0.8)
+        fivth_column = TextMobject("空间复杂度\\\\",  "\\quad\\\\$O(1)$\\\\", "\\quad\\\\$O(1)$\\\\", "\\quad\\\\$O(1)$\\\\", "\\quad\\\\$O(n)$\\\\", "\\quad\\\\$O(logn)$").scale(0.8)
+        sixth_column = TextMobject("稳定性\\\\", "\\quad\\\\不稳定\\\\", "\\quad\\\\稳定\\\\", "\\quad\\\\不稳定\\\\", "\\quad\\\\稳定\\\\", "\\quad\\\\不稳定", alignment="\\raggedright").scale(0.8)
+        colors = [YELLOW, MAROON, GOLD, RED_A, TEAL, PURPLE]
+        for i in range(len(colors)):
+            first_column[i].set_color(colors[i])
+            second_column[i].set_color(colors[i])
+            third_column[i].set_color(colors[i])
+            fourth_column[i].set_color(colors[i])
+            fivth_column[i].set_color(colors[i])
+            sixth_column[i].set_color(colors[i])
+        first_column.move_to([-5.5, 0, 0])
+        second_column.next_to(first_column, RIGHT)
+        third_column.next_to(second_column, RIGHT)
+        fourth_column.next_to(third_column, RIGHT)
+        fivth_column.next_to(fourth_column, RIGHT)
+        sixth_column.next_to(fivth_column, RIGHT)
+        self.play(ShowCreation(VGroup(first_column, second_column, third_column, fourth_column, fivth_column, sixth_column)))
+
+        col_start = [-4.55, 2.7, 0]
+        col_end = [-4.55, -2.7, 0]
+        row_start = [-6.5, 2,0]
+        row_end = [6.5, 2, 0]
+        increment = [3.2, 2, 2.1, 2.35, 0]
+        for i in range(len(colors) - 1):
+            col_line = DashedLine(start=col_start, end=col_end, dash_length=0.05, color=BLUE_A)
+            col_start[0] += increment[i]
+            col_end[0] += increment[i]
+            row_line = DashedLine(start=row_start, end=row_end,  dash_length=0.05, color=BLUE_A)
+            row_start[1] -= 1
+            row_end[1] -= 1
+            self.play(ShowCreation(VGroup(col_line, row_line)))
+        
+
+
+
+
+
+        
